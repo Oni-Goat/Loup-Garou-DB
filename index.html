@@ -1,0 +1,1370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragon Ball — Loup-Garou</title>
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --orange:#FF6B00;--gold:#FFD700;--dark:#0d0d1a;--card-bg:#1a1a2e;
+  --card-border:#2a2a4a;--text:#f0e6d3;--muted:#8a8aaa;--red:#e63946;
+  --blue:#4a90d9;--green:#52b788;--purple:#9b5de5;--cyan:#00b4d8;--pink:#ff69b4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--dark);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(255,107,0,.08) 0%,transparent 50%),
+  radial-gradient(ellipse at 80% 80%,rgba(74,144,217,.08) 0%,transparent 50%);}
+.stars{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+.star{position:absolute;width:2px;height:2px;background:white;border-radius:50%;opacity:0;animation:twinkle var(--d,3s) var(--delay,0s) infinite;}
+@keyframes twinkle{0%,100%{opacity:0}50%{opacity:var(--op,.6)}}
+.screen{position:relative;z-index:1;}
+.hidden{display:none!important;}
+
+/* NAV */
+#nav-bar{position:sticky;top:0;z-index:50;background:rgba(13,13,26,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--card-border);padding:.5rem 1.5rem;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.nav-btn{font-family:'Bangers',cursive;font-size:1rem;letter-spacing:1px;padding:6px 16px;
+  border:none;border-radius:8px;cursor:pointer;background:rgba(255,255,255,.06);color:var(--muted);transition:all .2s;}
+.nav-btn:hover,.nav-btn.active{background:rgba(255,215,0,.12);color:var(--gold);}
+
+/* TABS */
+.tab-bar{display:flex;gap:6px;margin-bottom:1.5rem;border-bottom:1px solid var(--card-border);}
+.tab-btn{font-family:'Bangers',cursive;font-size:1rem;letter-spacing:1px;padding:8px 18px;border:none;
+  border-radius:10px 10px 0 0;cursor:pointer;background:rgba(255,255,255,.05);color:var(--muted);
+  border-bottom:2px solid transparent;transition:all .2s;}
+.tab-btn.active{background:var(--card-bg);color:var(--gold);border-bottom:2px solid var(--gold);}
+.tab-content{display:none;}.tab-content.active{display:block;}
+
+/* INTRO */
+#intro{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center;}
+.logo{font-family:'Bangers',cursive;font-size:clamp(2.5rem,8vw,5rem);letter-spacing:3px;line-height:1.1;
+  background:linear-gradient(135deg,var(--gold),var(--orange),#ff4500);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.5rem;animation:glow-text 2s ease-in-out infinite alternate;}
+@keyframes glow-text{from{filter:drop-shadow(0 0 8px rgba(255,215,0,.4))}to{filter:drop-shadow(0 0 20px rgba(255,107,0,.7))}}
+.subtitle{font-size:1.1rem;color:var(--muted);margin-bottom:2.5rem;letter-spacing:2px;text-transform:uppercase;}
+.dragon-ball-display{display:flex;gap:12px;justify-content:center;margin-bottom:2.5rem;}
+.db-sphere{width:44px;height:44px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#fff8c0,var(--gold) 50%,#c47a00);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#7a1a00;
+  position:relative;animation:float-ball var(--f,2s) ease-in-out infinite alternate;box-shadow:0 0 12px rgba(255,215,0,.4);}
+@keyframes float-ball{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.db-sphere::after{content:'';position:absolute;top:8px;left:8px;width:10px;height:6px;background:rgba(255,255,255,.5);border-radius:50%;transform:rotate(-30deg);}
+.setup-box{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:2rem;max-width:520px;width:100%;}
+.setup-box h2{font-family:'Bangers',cursive;font-size:1.8rem;color:var(--gold);letter-spacing:2px;margin-bottom:1.5rem;}
+.form-group{margin-bottom:1.2rem;text-align:left;}
+.form-group label{display:block;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem;}
+.form-group input,.form-group select{width:100%;padding:.7rem 1rem;background:rgba(255,255,255,.05);
+  border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:600;}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--orange);}
+
+/* BUTTONS */
+.btn{font-family:'Bangers',cursive;font-size:1.3rem;letter-spacing:2px;padding:.75rem 2rem;
+  border:none;border-radius:50px;cursor:pointer;transition:transform .15s,box-shadow .15s;}
+.btn:hover{transform:scale(1.04)}.btn:active{transform:scale(.97)}
+.btn-primary {background:linear-gradient(135deg,var(--orange),#ff4500);color:#fff;box-shadow:0 4px 20px rgba(255,107,0,.35);}
+.btn-secondary{background:rgba(255,255,255,.08);color:var(--text);border:1px solid var(--card-border);}
+.btn-danger  {background:linear-gradient(135deg,var(--red),#b00020);color:#fff;box-shadow:0 4px 16px rgba(230,57,70,.35);}
+.btn-success {background:linear-gradient(135deg,var(--green),#2d6a4f);color:#fff;box-shadow:0 4px 16px rgba(82,183,136,.35);}
+.btn-purple  {background:linear-gradient(135deg,var(--purple),#6d28d9);color:#fff;box-shadow:0 4px 16px rgba(155,93,229,.35);}
+.btn-sm{font-size:.88rem!important;padding:.35rem .9rem!important;letter-spacing:1px!important;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;}
+
+/* PLAYER SETUP */
+#player-setup{max-width:680px;margin:0 auto;padding:2rem;min-height:100vh;}
+#player-setup h1{font-family:'Bangers',cursive;font-size:2.2rem;color:var(--gold);letter-spacing:2px;text-align:center;margin-bottom:.5rem;}
+.player-list{list-style:none;margin:1rem 0;display:flex;flex-direction:column;gap:8px;}
+.player-list li{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:.75rem 1rem;display:flex;align-items:center;gap:10px;font-weight:700;}
+.player-num{width:28px;height:28px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:800;color:#fff;flex-shrink:0;}
+.remove-btn{margin-left:auto;background:none;border:none;color:var(--red);cursor:pointer;font-size:1.1rem;padding:2px 6px;border-radius:6px;transition:background .15s;}
+.remove-btn:hover{background:rgba(230,57,70,.15);}
+.add-player-row{display:flex;gap:10px;margin-bottom:.5rem;}
+.add-player-row input{flex:1;padding:.7rem 1rem;background:rgba(255,255,255,.05);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:1rem;font-weight:600;}
+.add-player-row input:focus{outline:none;border-color:var(--orange);}
+.suggestions-box{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem;min-height:26px;}
+.suggestion-chip{background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.3);color:var(--gold);border-radius:20px;padding:3px 12px;font-size:.8rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.suggestion-chip:hover{background:rgba(255,215,0,.2);transform:scale(1.05);}
+
+/* ROLE SELECT */
+#role-select{max-width:960px;margin:0 auto;padding:2rem;min-height:100vh;}
+#role-select h1{font-family:'Bangers',cursive;font-size:2rem;color:var(--gold);letter-spacing:2px;text-align:center;margin-bottom:.3rem;}
+.role-select-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:.75rem 0 1.5rem;}
+.rsc-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:14px;padding:.9rem;transition:all .2s;position:relative;}
+.rsc-card.active{border-color:var(--gold);background:rgba(255,215,0,.05);}
+.rsc-header{display:flex;align-items:center;gap:8px;margin-bottom:.4rem;}
+.rsc-emoji{font-size:1.7rem;}
+.rsc-name{font-family:'Bangers',cursive;font-size:1.05rem;letter-spacing:1px;line-height:1.2;}
+.rsc-desc{font-size:.73rem;color:var(--muted);line-height:1.5;margin-bottom:.6rem;}
+.rsc-team-badge{font-size:.63rem;font-weight:800;padding:2px 7px;border-radius:8px;display:inline-block;margin-bottom:.4rem;}
+.rsc-counter{display:flex;align-items:center;gap:8px;}
+.rsc-counter button{width:24px;height:24px;border:none;border-radius:50%;cursor:pointer;font-size:.95rem;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.minus-btn{background:rgba(230,57,70,.2);color:var(--red);}.minus-btn:hover{background:rgba(230,57,70,.4);}
+.plus-btn {background:rgba(82,183,136,.2);color:var(--green);}.plus-btn:hover{background:rgba(82,183,136,.4);}
+.rsc-count{font-family:'Bangers',cursive;font-size:1.4rem;color:var(--gold);min-width:22px;text-align:center;}
+.rsc-unique{font-size:.65rem;color:var(--muted);}
+.rsc-mandatory{position:absolute;top:7px;right:7px;font-size:.6rem;background:rgba(255,107,0,.2);color:var(--orange);border:1px solid rgba(255,107,0,.4);border-radius:6px;padding:1px 5px;font-weight:800;}
+.role-total-bar{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.total-pill{font-family:'Bangers',cursive;font-size:1.3rem;padding:5px 16px;border-radius:30px;background:rgba(255,255,255,.06);color:var(--text);}
+.total-pill.ok{background:rgba(82,183,136,.15);color:var(--green);}
+.total-pill.over{background:rgba(230,57,70,.15);color:var(--red);}
+.category-label{font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:1rem;margin-bottom:.4rem;padding-left:2px;}
+.preset-row{display:flex;gap:7px;flex-wrap:wrap;}
+.preset-btn{font-family:'Bangers',cursive;font-size:.85rem;padding:5px 12px;border:1px solid var(--card-border);border-radius:16px;cursor:pointer;background:rgba(255,255,255,.04);color:var(--muted);transition:all .2s;}
+.preset-btn:hover{border-color:var(--orange);color:var(--text);}
+
+/* NIGHT ORDER SCREEN */
+#night-order-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center;}
+.night-order-title{font-family:'Bangers',cursive;font-size:clamp(2rem,6vw,3.5rem);letter-spacing:3px;color:var(--cyan);margin-bottom:.4rem;
+  text-shadow:0 0 20px rgba(0,180,216,.5);animation:glow-cyan 2s ease-in-out infinite alternate;}
+@keyframes glow-cyan{from{text-shadow:0 0 10px rgba(0,180,216,.4)}to{text-shadow:0 0 30px rgba(0,180,216,.8)}}
+.night-order-subtitle{font-size:.95rem;color:var(--muted);margin-bottom:2rem;letter-spacing:1px;}
+.night-order-list-display{list-style:none;width:100%;max-width:520px;display:flex;flex-direction:column;gap:10px;margin-bottom:2rem;}
+.nol-item{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:.85rem 1.25rem;
+  display:flex;align-items:center;gap:14px;opacity:0;transform:translateX(-30px);transition:all .4s ease;}
+.nol-item.visible{opacity:1;transform:translateX(0);}
+.nol-item.present{border-color:var(--gold);background:rgba(255,215,0,.07);box-shadow:0 0 12px rgba(255,215,0,.15);}
+.nol-item.absent{opacity:.35;filter:grayscale(.7);}
+.nol-num{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-family:'Bangers',cursive;font-size:.9rem;color:var(--muted);flex-shrink:0;}
+.nol-item.present .nol-num{background:var(--gold);color:var(--dark);}
+.nol-emoji{font-size:1.8rem;flex-shrink:0;}
+.nol-info{text-align:left;flex:1;}
+.nol-name{font-family:'Bangers',cursive;font-size:1.1rem;letter-spacing:1px;}
+.nol-desc{font-size:.75rem;color:var(--muted);margin-top:2px;}
+.nol-status{font-size:.72rem;font-weight:800;padding:2px 8px;border-radius:10px;}
+.nol-status.in-game{background:rgba(82,183,136,.2);color:var(--green);}
+.nol-status.not-in-game{background:rgba(255,255,255,.06);color:var(--muted);}
+.moon-deco{font-size:5rem;margin-bottom:1rem;animation:moon-pulse 3s ease-in-out infinite;}
+@keyframes moon-pulse{0%,100%{transform:scale(1) rotate(-5deg)}50%{transform:scale(1.08) rotate(5deg)}}
+
+/* ROLE REVEAL */
+#role-reveal{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center;}
+.cover-card{background:linear-gradient(135deg,#0d0d1a,#1a1a2e);border:2px solid var(--orange);border-radius:24px;padding:2.5rem;max-width:400px;width:100%;text-align:center;}
+.cover-card h2{font-family:'Bangers',cursive;font-size:2rem;color:var(--gold);letter-spacing:3px;margin-bottom:.5rem;}
+.cover-card p{color:var(--muted);font-size:.9rem;margin-bottom:1.5rem;}
+.role-card{background:var(--card-bg);border:2px solid var(--card-border);border-radius:24px;padding:2.5rem 2rem;max-width:400px;width:100%;}
+.role-card.revealed{animation:card-reveal .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes card-reveal{from{transform:scale(.5) rotateY(90deg);opacity:0}to{transform:scale(1) rotateY(0deg);opacity:1}}
+.rc-player{font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px;margin-bottom:.75rem;font-weight:700;}
+.rc-emoji-big{font-size:5rem;margin:.75rem 0;display:block;animation:bounce .5s ease-in-out .3s both;}
+@keyframes bounce{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+.rc-name{font-family:'Bangers',cursive;font-size:2.2rem;letter-spacing:3px;margin-bottom:.5rem;}
+.rc-team-badge{display:inline-block;padding:4px 14px;border-radius:20px;font-size:.8rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem;}
+.team-good{background:rgba(82,183,136,.2);color:var(--green);border:1px solid rgba(82,183,136,.4);}
+.team-evil{background:rgba(230,57,70,.2);color:var(--red);border:1px solid rgba(230,57,70,.4);}
+.team-neutral{background:rgba(155,93,229,.2);color:var(--purple);border:1px solid rgba(155,93,229,.4);}
+.rc-desc{font-size:.88rem;color:var(--muted);line-height:1.6;margin-bottom:1rem;}
+.rc-extra{margin-top:.5rem;display:flex;flex-direction:column;gap:8px;}
+.info-badge{border-radius:12px;padding:8px 14px;font-size:.82rem;font-weight:700;}
+.info-love{background:rgba(255,105,180,.15);color:var(--pink);border:1px solid rgba(255,105,180,.4);}
+.info-ally{background:rgba(230,57,70,.12);color:#ff8a8a;border:1px solid rgba(230,57,70,.3);}
+.info-twin{background:rgba(232,121,249,.12);color:#e879f9;border:1px solid rgba(232,121,249,.3);}
+.info-note{background:rgba(0,180,216,.1);color:var(--cyan);border:1px solid rgba(0,180,216,.3);}
+
+/* GAME */
+#game-screen{max-width:960px;margin:0 auto;padding:1.5rem;}
+.game-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem;}
+.game-header h1{font-family:'Bangers',cursive;font-size:1.8rem;color:var(--gold);letter-spacing:2px;}
+.phase-badge{display:flex;align-items:center;gap:8px;padding:8px 18px;border-radius:50px;font-weight:800;font-size:.9rem;text-transform:uppercase;letter-spacing:1px;}
+.phase-day  {background:rgba(255,215,0,.15);color:var(--gold);border:1px solid rgba(255,215,0,.3);}
+.phase-night{background:rgba(74,144,217,.15);color:var(--cyan);border:1px solid rgba(74,144,217,.3);}
+.round-counter{font-size:.85rem;color:var(--muted);font-weight:700;}
+.players-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:1.5rem;}
+.player-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:.9rem .75rem;
+  text-align:center;cursor:pointer;transition:all .2s;position:relative;user-select:none;}
+.player-card:hover:not(.dead){border-color:var(--orange);transform:translateY(-3px);box-shadow:0 6px 20px rgba(255,107,0,.2);}
+.player-card.selected{border-color:var(--gold)!important;background:rgba(255,215,0,.08);box-shadow:0 0 0 2px var(--gold);}
+.player-card.dead{opacity:.3;cursor:default;filter:grayscale(.9);}
+.player-card.coupled{border-color:var(--pink)!important;}
+.p-avatar{font-size:2rem;margin-bottom:.3rem;display:block;}
+.p-name{font-weight:800;font-size:.8rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.p-role{font-size:.65rem;color:var(--muted);margin-top:2px;}
+.dead-label{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Bangers',cursive;font-size:1.1rem;color:var(--red);letter-spacing:2px;pointer-events:none;}
+.badge-tl{position:absolute;top:4px;left:4px;font-size:.8rem;}
+.badge-tr{position:absolute;top:4px;right:4px;font-size:.8rem;}
+.action-panel{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:1.4rem;margin-bottom:1.25rem;}
+.action-panel h2{font-family:'Bangers',cursive;font-size:1.5rem;color:var(--gold);letter-spacing:2px;margin-bottom:.4rem;}
+.action-panel p{color:var(--muted);font-size:.88rem;margin-bottom:.9rem;line-height:1.55;}
+
+/* NIGHT STEP PANEL */
+.night-step-panel{background:var(--card-bg);border:1px solid var(--card-border);border-radius:18px;padding:1.4rem;margin-bottom:1.25rem;}
+.night-step-panel h2{font-family:'Bangers',cursive;font-size:1.5rem;color:var(--cyan);letter-spacing:2px;margin-bottom:.4rem;}
+.night-step-panel p{color:var(--muted);font-size:.88rem;margin-bottom:.9rem;line-height:1.55;}
+.night-queue-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.nq-step{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 10px;border-radius:10px;font-size:.7rem;font-weight:800;min-width:52px;transition:all .3s;}
+.nq-step.done   {background:rgba(82,183,136,.12);color:var(--green);border:1px solid rgba(82,183,136,.3);}
+.nq-step.active {background:rgba(0,180,216,.15);color:var(--cyan);border:1px solid rgba(0,180,216,.4);box-shadow:0 0 12px rgba(0,180,216,.2);transform:scale(1.05);}
+.nq-step.pending{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid rgba(255,255,255,.06);}
+.nq-step .step-emoji{font-size:1.3rem;}
+.nq-step .step-label{text-align:center;line-height:1.2;}
+
+/* VOTE */
+.vote-tally{display:flex;flex-direction:column;gap:8px;margin-top:.75rem;}
+.vote-row{display:flex;align-items:center;gap:10px;font-size:.88rem;font-weight:700;}
+.vote-bar{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden;}
+.vote-fill{height:100%;background:linear-gradient(90deg,var(--orange),var(--gold));border-radius:4px;transition:width .3s;}
+
+/* LOG */
+.log-panel{background:var(--card-bg);border:1px solid var(--card-border);border-radius:14px;padding:.9rem 1.1rem;max-height:190px;overflow-y:auto;}
+.log-panel h3{font-family:'Bangers',cursive;font-size:1rem;color:var(--muted);letter-spacing:2px;margin-bottom:.6rem;}
+.log-entry{font-size:.83rem;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.4;}
+.log-entry.ld{color:var(--red)}.log-entry.ls{color:var(--green)}.log-entry.lv{color:var(--cyan)}
+.log-entry.ln{color:var(--purple)}.log-entry.lday{color:var(--gold)}.log-entry.ll{color:var(--pink)}.log-entry.lsp{color:#a78bfa}
+
+/* WIN */
+#win-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:2rem;text-align:center;}
+.win-title{font-family:'Bangers',cursive;font-size:clamp(2.2rem,7vw,4rem);letter-spacing:4px;margin-bottom:1rem;animation:glow-text 1.5s ease-in-out infinite alternate;}
+.win-good{color:var(--gold)}.win-evil{color:var(--red)}
+.winner-list{list-style:none;margin:1.25rem 0;display:flex;flex-direction:column;gap:8px;width:100%;max-width:480px;}
+.winner-list li{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:.75rem 1.1rem;display:flex;align-items:center;gap:12px;font-weight:700;}
+
+/* DB */
+#db-screen{max-width:720px;margin:0 auto;padding:2rem;min-height:100vh;}
+#db-screen h1{font-family:'Bangers',cursive;font-size:2rem;color:var(--gold);letter-spacing:2px;text-align:center;margin-bottom:.3rem;}
+.db-stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:1.25rem 0;}
+.db-stat-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:.9rem;text-align:center;}
+.stat-val{font-family:'Bangers',cursive;font-size:1.9rem;color:var(--gold);}
+.stat-lbl{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:3px;}
+.db-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+.db-table th{text-align:left;padding:7px 10px;color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--card-border);}
+.db-table td{padding:7px 10px;border-bottom:1px solid rgba(255,255,255,.04);}
+.db-table tr:hover td{background:rgba(255,255,255,.03);}
+.db-empty{text-align:center;color:var(--muted);padding:2rem;font-size:.9rem;}
+.search-row{display:flex;gap:10px;margin-bottom:1rem;}
+.search-row input{flex:1;padding:.55rem 1rem;background:rgba(255,255,255,.05);border:1px solid var(--card-border);border-radius:10px;color:var(--text);font-family:'Nunito',sans-serif;font-size:.88rem;}
+.search-row input:focus{outline:none;border-color:var(--orange);}
+
+/* ROLES CATALOG */
+#roles-screen{max-width:960px;margin:0 auto;padding:2rem;}
+#roles-screen h1{font-family:'Bangers',cursive;font-size:2rem;color:var(--gold);letter-spacing:2px;text-align:center;margin-bottom:1.25rem;}
+.roles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;}
+.role-cat-card{background:var(--card-bg);border:1px solid var(--card-border);border-left:3px solid var(--orange);border-radius:14px;padding:1.1rem;position:relative;}
+.rcc-emoji{font-size:2.2rem;margin-bottom:.4rem;display:block;}
+.rcc-name{font-family:'Bangers',cursive;font-size:1.2rem;letter-spacing:1px;}
+.rcc-desc{font-size:.75rem;color:var(--muted);margin-top:5px;line-height:1.5;}
+.rcc-team{position:absolute;top:8px;right:8px;font-size:.62rem;font-weight:800;padding:2px 7px;border-radius:8px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:flex;align-items:center;justify-content:center;padding:1.5rem;}
+.modal-box{background:var(--card-bg);border:2px solid var(--orange);border-radius:20px;padding:2rem;max-width:420px;width:100%;text-align:center;}
+.modal-box h2{font-family:'Bangers',cursive;font-size:1.8rem;color:var(--gold);letter-spacing:2px;margin-bottom:.6rem;}
+.modal-box p{color:var(--muted);font-size:.88rem;margin-bottom:1.25rem;line-height:1.6;}
+.modal-big-emoji{font-size:4rem;margin-bottom:.4rem;}
+
+@media(max-width:500px){
+  .players-grid{grid-template-columns:repeat(auto-fill,minmax(105px,1fr));}
+  .btn-row{flex-direction:column;}
+  .role-select-grid{grid-template-columns:1fr 1fr;}
+  .night-queue-bar{gap:4px;}
+  .nq-step{min-width:44px;padding:4px 6px;}
+}
+::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="stars" id="stars"></div>
+
+<!-- NAV -->
+<div id="nav-bar" class="hidden">
+  <button class="nav-btn" onclick="showMain('game-screen')">🎮 Jeu</button>
+  <button class="nav-btn" onclick="showMain('db-screen')">📊 Hall of Fame</button>
+  <button class="nav-btn" onclick="showMain('roles-screen')">📖 Rôles</button>
+</div>
+
+<!-- INTRO -->
+<div id="intro" class="screen">
+  <div class="logo">Dragon Ball<br>Loup-Garou</div>
+  <div class="subtitle">Le jeu du village de l'Espace</div>
+  <div class="dragon-ball-display" id="dragon-balls"></div>
+  <div class="setup-box">
+    <h2>⚙️ Configuration</h2>
+    <div class="form-group">
+      <label>Nombre de joueurs (4–20)</label>
+      <input type="number" id="player-count" min="4" max="20" value="6"/>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:.5rem;">
+      <button class="btn btn-primary" onclick="startSetup()">COMMENCER !</button>
+      <button class="btn btn-secondary" style="font-size:1rem;" onclick="goToDb()">📊 Hall of Fame</button>
+      <button class="btn btn-secondary" style="font-size:1rem;" onclick="goToRoles()">📖 Les Rôles</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER SETUP -->
+<div id="player-setup" class="screen hidden">
+  <h1 id="setup-title">👤 Joueurs (0/6)</h1>
+  <p style="text-align:center;color:var(--muted);margin-bottom:1rem;font-size:.88rem;">Entrez les noms des guerriers</p>
+  <div class="add-player-row">
+    <input type="text" id="new-player-name" placeholder="Nom du joueur..." onkeydown="if(event.key==='Enter')addPlayer()"/>
+    <button class="btn btn-primary" style="font-size:.95rem;padding:.65rem 1.1rem;" onclick="addPlayer()">+ Ajouter</button>
+  </div>
+  <div style="margin-bottom:.3rem;"><span style="font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;">⭐ Joueurs connus :</span></div>
+  <div class="suggestions-box" id="suggestions-box"></div>
+  <ul class="player-list" id="player-list"></ul>
+  <div style="text-align:center;margin-top:1rem;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn btn-secondary" style="font-size:.95rem;" onclick="showIntro()">← Retour</button>
+    <button class="btn btn-primary" id="start-game-btn" onclick="goToRoleSelect()" disabled>⚡ Choisir les rôles →</button>
+  </div>
+</div>
+
+<!-- ROLE SELECT -->
+<div id="role-select" class="screen hidden">
+  <h1>🎲 Choix des Rôles</h1>
+  <p style="text-align:center;color:var(--muted);font-size:.85rem;margin-bottom:1rem;">Ajoutez/retirez des rôles. Le total doit correspondre au nombre de joueurs.</p>
+  <div class="role-total-bar" id="role-total-bar">
+    <div>
+      <div style="font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Total</div>
+      <span class="total-pill" id="total-pill">0 / 6</span>
+    </div>
+    <div>
+      <div style="font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Équipes</div>
+      <div id="team-summary" style="font-size:.82rem;font-weight:700;"></div>
+    </div>
+    <div style="margin-left:auto;">
+      <div style="font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;">Présets</div>
+      <div class="preset-row" id="preset-row"></div>
+    </div>
+  </div>
+  <div id="role-select-body"></div>
+  <div style="text-align:center;margin-top:2rem;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+    <button class="btn btn-secondary" style="font-size:.95rem;" onclick="showScreen('player-setup')">← Retour</button>
+    <button class="btn btn-primary" id="confirm-roles-btn" onclick="confirmRoles()" disabled>✅ Confirmer et distribuer</button>
+  </div>
+</div>
+
+<!-- NIGHT ORDER SCREEN (shown before first night and optionally after) -->
+<div id="night-order-screen" class="screen hidden">
+  <div class="moon-deco">🌙</div>
+  <div class="night-order-title" id="nos-title">La Nuit Tombe…</div>
+  <div class="night-order-subtitle" id="nos-subtitle">Voici l'ordre de passage cette nuit</div>
+  <ul class="night-order-list-display" id="night-order-list-display"></ul>
+  <button class="btn btn-purple" id="nos-continue-btn" onclick="startNightActions()">▶️ Commencer la nuit</button>
+</div>
+
+<!-- ROLE REVEAL -->
+<div id="role-reveal" class="screen hidden">
+  <p style="font-size:.82rem;color:var(--muted);margin-bottom:.9rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;" id="reveal-progress"></p>
+  <div class="cover-card" id="cover-card">
+    <h2>🃏 Carte Secrète</h2>
+    <p id="cover-player-name" style="font-size:1.1rem;font-weight:800;color:var(--text);">—</p>
+    <p>Assurez-vous d'être seul(e) à regarder, puis révélez votre rôle.</p>
+    <button class="btn btn-primary" onclick="revealRole()">👁️ Voir mon rôle</button>
+  </div>
+  <div class="role-card hidden" id="role-card-el">
+    <div class="rc-player" id="rc-player-name"></div>
+    <span class="rc-emoji-big" id="rc-emoji"></span>
+    <div class="rc-name" id="rc-role-name"></div>
+    <div class="rc-team-badge" id="rc-team"></div>
+    <div class="rc-desc" id="rc-role-desc"></div>
+    <div class="rc-extra" id="rc-extra"></div>
+    <button class="btn btn-secondary" onclick="nextReveal()" style="width:100%;margin-top:1rem;">Passer au suivant →</button>
+  </div>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game-screen" class="screen hidden">
+  <div class="game-header">
+    <h1>Dragon Ball LG</h1>
+    <div id="phase-badge" class="phase-badge phase-day">☀️ Jour 1</div>
+    <div class="round-counter" id="round-counter">Tour 1</div>
+  </div>
+  <div class="players-grid" id="players-grid"></div>
+  <!-- Day / current action panel -->
+  <div class="action-panel" id="action-panel">
+    <h2 id="action-title">Phase du Jour</h2>
+    <p id="action-desc">Les survivants débattent et votent.</p>
+    <div class="btn-row" id="action-buttons"></div>
+  </div>
+  <!-- Night step panel (shown during night actions) -->
+  <div class="night-step-panel hidden" id="night-step-panel">
+    <h2 id="ns-title">🌙 Action de Nuit</h2>
+    <div class="night-queue-bar" id="night-queue-bar"></div>
+    <p id="ns-desc">—</p>
+    <div class="btn-row" id="ns-buttons"></div>
+  </div>
+  <!-- Vote panel -->
+  <div class="action-panel hidden" id="vote-panel">
+    <h2>🗳️ Votes</h2>
+    <p id="vote-desc" style="color:var(--muted);font-size:.88rem;"></p>
+    <div class="vote-tally" id="vote-tally"></div>
+    <div class="btn-row" style="margin-top:.9rem;" id="vote-action-row"></div>
+  </div>
+  <!-- Log -->
+  <div class="log-panel">
+    <h3>📜 Journal du Village</h3>
+    <div id="game-log"></div>
+  </div>
+</div>
+
+<!-- DB SCREEN -->
+<div id="db-screen" class="screen hidden">
+  <h1>📊 Hall of Fame</h1>
+  <p style="text-align:center;color:var(--muted);font-size:.83rem;margin-bottom:1.25rem;">Historique de toutes les parties</p>
+  <div class="db-stats-grid" id="db-stats-grid"></div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchDbTab('players')">👤 Joueurs</button>
+    <button class="tab-btn" onclick="switchDbTab('games')">🎮 Parties</button>
+  </div>
+  <div id="db-tab-players" class="tab-content active">
+    <div class="search-row">
+      <input type="text" id="db-search" placeholder="Rechercher un joueur..." oninput="renderDbPlayers()"/>
+      <button class="btn btn-secondary btn-sm" onclick="clearDb()">🗑️ Effacer</button>
+    </div>
+    <div id="db-players-content"></div>
+  </div>
+  <div id="db-tab-games" class="tab-content"><div id="db-games-content"></div></div>
+  <div style="text-align:center;margin-top:2rem;">
+    <button class="btn btn-secondary" style="font-size:.95rem;" onclick="showIntro()">← Accueil</button>
+  </div>
+</div>
+
+<!-- ROLES CATALOG -->
+<div id="roles-screen" class="screen hidden">
+  <h1>📖 Tous les Rôles</h1>
+  <div class="roles-grid" id="roles-grid"></div>
+  <div style="text-align:center;margin-top:2rem;">
+    <button class="btn btn-secondary" style="font-size:.95rem;" onclick="showIntro()">← Accueil</button>
+  </div>
+</div>
+
+<!-- WIN SCREEN -->
+<div id="win-screen" class="screen hidden">
+  <div style="font-size:5rem;margin-bottom:1rem;" id="win-emoji">🏆</div>
+  <div class="win-title" id="win-title">Victoire !</div>
+  <p style="color:var(--muted);font-size:.95rem;margin-bottom:1.25rem;" id="win-desc"></p>
+  <ul class="winner-list" id="winner-list"></ul>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:1rem;">
+    <button class="btn btn-primary" onclick="location.reload()">🔄 Nouvelle Partie</button>
+    <button class="btn btn-secondary" style="font-size:.95rem;" onclick="goToDb()">📊 Hall of Fame</button>
+  </div>
+</div>
+
+<!-- HUNTER MODAL -->
+<div id="hunter-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <div class="modal-big-emoji">🏹</div>
+    <h2>TRUNKS EST TOMBÉ !</h2>
+    <p id="hunter-modal-desc">Avant de mourir, Trunks peut emporter un guerrier avec lui. Sélectionnez une cible dans la grille.</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <button class="btn btn-danger" onclick="hunterShoot()">🏹 Tirer !</button>
+      <button class="btn btn-secondary" onclick="hunterSkip()">Passer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+// ═══════════════════════════════════════════════════════════════
+//  DONNÉES — RÔLES
+// ═══════════════════════════════════════════════════════════════
+const ROLES = {
+  // ── VILLAGEOIS ─────────────────────────────────────────────
+  goku:      {name:'Goku',          emoji:'🟠',team:'good',  cat:'Villageois',
+    desc:'Guerrier du village, sans pouvoir spécial. Use de ton instinct pour détecter les imposteurs !',
+    nightAction:null, maxCount:8, color:'var(--orange)', mandatory:true},
+  // ── SPÉCIAUX BIEN ──────────────────────────────────────────
+  bulma:     {name:'Bulma (Voyante)',emoji:'💙',team:'good',  cat:'Spécial Bien',
+    desc:'Chaque nuit, ton radar Dragon Ball révèle à toi seul le camp (Bien/Mal) d\'un joueur.',
+    nightAction:'seer',    maxCount:1, color:'var(--blue)',   unique:true},
+  krilin:    {name:'Krilin (Protecteur)',emoji:'🥋',team:'good',  cat:'Spécial Bien',
+    desc:'Chaque nuit, tu protèges UN joueur (pas toi). S\'il est ciblé par le Mal, il survit.',
+    nightAction:'protect', maxCount:1, color:'var(--cyan)',   unique:true},
+  dende:     {name:'Dende (Guérisseur)',emoji:'💚',team:'good',  cat:'Spécial Bien',
+    desc:'Une seule fois par partie, tu soignes un joueur ciblé et le sauves de la mort.',
+    nightAction:'heal',    maxCount:1, color:'var(--green)',  unique:true},
+  trunks:    {name:'Trunks (Chasseur)',emoji:'🏹',team:'good',  cat:'Spécial Bien',
+    desc:'Si tu es éliminé (jour OU nuit), tu peux immédiatement emporter un autre joueur dans ta chute.',
+    nightAction:null,      maxCount:1, color:'#a78bfa',       unique:true},
+  vados:     {name:'Vados (Cupidon)', emoji:'💘',team:'good',  cat:'Spécial Bien',
+    desc:'1ère nuit seulement : tu choisis deux joueurs qui tombent amoureux. Si l\'un meurt, l\'autre le suit. S\'ils sont les 2 derniers vivants, ils gagnent !',
+    nightAction:'cupid',   maxCount:1, color:'var(--pink)',   unique:true},
+  piccolo:   {name:'Piccolo (Ancien)',emoji:'🟢',team:'good',  cat:'Spécial Bien',
+    desc:'Chaque nuit, tu peux identifier le rôle exact d\'un joueur mort (tu vois son rôle, pas seulement son camp).',
+    nightAction:'examine', maxCount:1, color:'#4ade80',       unique:true},
+  gohan:     {name:'Gohan (Érudit)',  emoji:'📚',team:'good',  cat:'Spécial Bien',
+    desc:'Une fois par nuit, tu peux découvrir si un joueur vivant a utilisé un pouvoir cette nuit (sans savoir lequel).',
+    nightAction:'watch',   maxCount:1, color:'#fbbf24',       unique:true},
+  android18: {name:'Android 18 (Jumelle)',emoji:'🤖',team:'good',cat:'Spécial Bien',
+    desc:'1ère nuit : tu découvres secrètement qui est Android 17. Vous vous coordonnez en secret.',
+    nightAction:'twin',    maxCount:1, color:'#e879f9',       unique:true, twinRole:'android17'},
+  android17: {name:'Android 17 (Jumeau)', emoji:'🤖',team:'good',cat:'Spécial Bien',
+    desc:'1ère nuit : tu découvres secrètement qui est Android 18. Vous vous coordonnez en secret.',
+    nightAction:'twin',    maxCount:1, color:'#e879f9',       unique:true, twinRole:'android18'},
+  chichi:    {name:'Chi-Chi (Influente)',emoji:'👩',team:'good',cat:'Spécial Bien',
+    desc:'Une fois par partie, pendant la phase de vote, tu peux imposer une trêve : personne n\'est éliminé ce jour-là.',
+    nightAction:null,      maxCount:1, color:'#f97316',       unique:true, dayPower:'veto'},
+  // ── MÉCHANTS ───────────────────────────────────────────────
+  freezer:   {name:'Freezer',        emoji:'👾',team:'evil',  cat:'Méchants',
+    desc:'Chef du Mal. Chaque nuit, tu coordonnes l\'élimination d\'un guerrier. Tu connais tous tes alliés.',
+    nightAction:'kill',    maxCount:3, color:'var(--red)',     mandatory:true},
+  cellMax:   {name:'Cell Max (Sbire)',emoji:'🦠',team:'evil',  cat:'Méchants',
+    desc:'Sbire de Freezer. Tu connais tes alliés. La nuit, tu approuves/choisis la cible avec ton chef.',
+    nightAction:'killMinion',maxCount:4,color:'var(--purple)'},
+  babidi:    {name:'Babidi (Sorcier)',emoji:'🔮',team:'evil',  cat:'Méchants',
+    desc:'Une fois par partie, la nuit, tu corrompus un villageois qui bascule du côté du Mal (il devient Sbire).',
+    nightAction:'corrupt', maxCount:1, color:'#c084fc',       unique:true},
+  beerus:    {name:'Beerus (Destructeur)',emoji:'😼',team:'evil',cat:'Méchants',
+    desc:'Une fois par partie, la nuit, tu bloques le pouvoir d\'un joueur du Bien. Ce joueur ne peut pas agir cette nuit.',
+    nightAction:'block',   maxCount:1, color:'#8b5cf6',       unique:true},
+  blackGoku: {name:'Goku Black (Imposteur)',emoji:'⚫',team:'evil',cat:'Méchants',
+    desc:'Apparaît comme "Côté du Bien" à la Voyante ! Très difficile à démasquer.',
+    nightAction:'killMinion',maxCount:1,color:'#374151',      unique:true, seemsGood:true},
+  // ── NEUTRES ────────────────────────────────────────────────
+  majinBuu:  {name:'Majin Buu (Survivant)',emoji:'🍭',team:'neutral',cat:'Neutre',
+    desc:'Tu veux juste survivre. Si tu es encore en vie quand une équipe gagne, tu gagnes aussi !',
+    nightAction:null, maxCount:1, color:'var(--pink)', unique:true},
+  broly:     {name:'Broly (Solitaire)',   emoji:'💢',team:'neutral',cat:'Neutre',
+    desc:'Objectif : être le seul survivant. Pousse les deux camps à s\'entre-tuer. Si tu es le dernier, tu gagnes seul.',
+    nightAction:null, maxCount:1, color:'#059669',     unique:true},
+  whis:      {name:'Whis (Observateur)',  emoji:'🪄',team:'neutral',cat:'Neutre',
+    desc:'1ère nuit : tu choisis secrètement un camp (Bien ou Mal). Si ce camp gagne ET que tu es vivant, tu gagnes.',
+    nightAction:'choose_side',maxCount:1,color:'#38bdf8',unique:true},
+};
+
+// Ordre global des actions nocturnes
+const NIGHT_ORDER = [
+  'vados','android18','android17',
+  'bulma','piccolo','gohan',
+  'krilin','dende',
+  'beerus','babidi','whis',
+  'freezer','cellMax','blackGoku'
+];
+
+// Descriptions courtes pour l'écran d'ordre de passage
+const NIGHT_ROLE_DESC = {
+  vados:    'Forme un couple (nuit 1)',
+  android18:'Découvre son jumeau (nuit 1)',
+  android17:'Découvre sa jumelle (nuit 1)',
+  bulma:    'Sonde le camp d\'un joueur',
+  piccolo:  'Identifie le rôle d\'un mort',
+  gohan:    'Surveille si un joueur a agi',
+  krilin:   'Protège un joueur',
+  dende:    'Soigne un joueur (1× / partie)',
+  beerus:   'Bloque un pouvoir (1× / partie)',
+  babidi:   'Corrompt un villageois (1× / partie)',
+  whis:     'Choisit son camp (nuit 1)',
+  freezer:  'Élimine un guerrier',
+  cellMax:  'Approuve / choisit la cible',
+  blackGoku:'Approuve / choisit la cible',
+};
+
+const PRESETS = {
+  '4j Simple'   :{goku:2,  freezer:1,cellMax:0,bulma:1},
+  '5j Classique':{goku:2,  freezer:1,cellMax:0,bulma:1,krilin:1},
+  '6j Standard' :{goku:3,  freezer:1,cellMax:1,bulma:1},
+  '7j Chasseur' :{goku:3,  freezer:1,cellMax:1,bulma:1,trunks:1},
+  '8j Cupidon'  :{goku:3,  freezer:1,cellMax:1,bulma:1,trunks:1,vados:1},
+  '10j Complet' :{goku:4,  freezer:1,cellMax:2,bulma:1,krilin:1,trunks:1,vados:1},
+  '12j Épique'  :{goku:4,  freezer:2,cellMax:2,babidi:1,bulma:1,krilin:1,trunks:1,vados:1,majinBuu:1},
+  '14j Chaos'   :{goku:4,  freezer:2,cellMax:2,babidi:1,beerus:1,bulma:1,krilin:1,trunks:1,vados:1,piccolo:1,majinBuu:1},
+};
+
+const AVATARS=['🔥','⚡','💫','🌊','🌪️','☄️','🌟','💥','🎯','🏆','👊','🛡️','🌙','☀️','💎','🔮','🌈','🌺','🍃','🦋'];
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+const S = {
+  players:[],phase:'day',round:1,selected:null,
+  log:[],nightActions:{},nightQueue:[],nightStep:0,
+  healUsed:false,blockUsed:false,corruptUsed:false,vetoUsed:false,elderUsed:false,watchUsed:false,
+  coupleIds:[],twinIds:{},whisSide:null,blockedId:null,
+  chosenRoles:{},playerCount:6,revealIndex:0,
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  DB
+// ═══════════════════════════════════════════════════════════════
+const DB_KEY='dragonball_lg_v2';
+function loadDb(){try{const r=localStorage.getItem(DB_KEY);return r?JSON.parse(r):{players:{},games:[]}}catch{return{players:{},games:[]}}}
+function saveDb(db){try{localStorage.setItem(DB_KEY,JSON.stringify(db))}catch{}}
+function recordGame(winner){
+  const db=loadDb();
+  db.games.push({date:new Date().toLocaleDateString('fr-FR'),winner,
+    players:S.players.map(p=>({name:p.name,roleKey:p.roleKey,alive:p.alive,couple:S.coupleIds.includes(p.id)}))});
+  S.players.forEach(p=>{
+    if(!db.players[p.name])db.players[p.name]={name:p.name,games:0,wins:0,survived:0,roles:{}};
+    const e=db.players[p.name];e.games++;
+    const r=ROLES[p.roleKey];
+    let won=false;
+    if(winner==='good'   &&r.team==='good') won=true;
+    if(winner==='evil'   &&r.team==='evil') won=true;
+    if(winner==='neutral'&&p.roleKey==='majinBuu') won=true;
+    if(winner==='broly'  &&p.roleKey==='broly')    won=true;
+    if(winner==='couple' &&S.coupleIds.includes(p.id)) won=true;
+    if(winner==='whis'   &&p.roleKey==='whis') won=true;
+    if(won)e.wins++;
+    if(p.alive)e.survived++;
+    e.roles[p.roleKey]=(e.roles[p.roleKey]||0)+1;
+  });
+  saveDb(db);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT VISUAL
+// ═══════════════════════════════════════════════════════════════
+function createStars(){
+  const c=document.getElementById('stars');
+  for(let i=0;i<80;i++){
+    const s=document.createElement('div');s.className='star';
+    s.style.left=Math.random()*100+'%';s.style.top=Math.random()*100+'%';
+    s.style.setProperty('--d',(2+Math.random()*4)+'s');
+    s.style.setProperty('--delay',(Math.random()*5)+'s');
+    s.style.setProperty('--op',(0.3+Math.random()*0.7)+'');
+    c.appendChild(s);
+  }
+}
+function mkDragonBalls(){
+  const c=document.getElementById('dragon-balls');
+  for(let i=1;i<=7;i++){
+    const d=document.createElement('div');d.className='db-sphere';d.textContent='★'.repeat(i);
+    d.style.setProperty('--f',(1.5+Math.random()*1.5)+'s');d.style.animationDelay=(i*.15)+'s';
+    c.appendChild(d);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+const SCREENS=['intro','player-setup','role-select','night-order-screen','role-reveal','game-screen','win-screen','db-screen','roles-screen'];
+function showScreen(id){
+  SCREENS.forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id));
+  const withNav=['game-screen','db-screen','roles-screen'];
+  document.getElementById('nav-bar').classList.toggle('hidden',!withNav.includes(id));
+}
+function showMain(id){showScreen(id);if(id==='db-screen')renderDbScreen();if(id==='roles-screen')renderRolesScreen();}
+function showIntro(){showScreen('intro');document.getElementById('nav-bar').classList.add('hidden');}
+function goToDb()   {showScreen('db-screen');renderDbScreen();}
+function goToRoles(){showScreen('roles-screen');renderRolesScreen();}
+
+// ═══════════════════════════════════════════════════════════════
+//  PLAYER SETUP
+// ═══════════════════════════════════════════════════════════════
+function startSetup(){
+  S.playerCount=Math.max(4,Math.min(20,parseInt(document.getElementById('player-count').value)||6));
+  S.players=[];renderPlayerList();renderSuggestions();showScreen('player-setup');
+}
+function renderSuggestions(){
+  const db=loadDb();const box=document.getElementById('suggestions-box');
+  const names=Object.keys(db.players).filter(n=>!S.players.find(p=>p.name===n));
+  box.innerHTML=names.length
+    ?names.slice(0,14).map(n=>`<span class="suggestion-chip" onclick="addPlayerByName('${n.replace(/'/g,"\\'")}')">⭐ ${n}</span>`).join('')
+    :'<span style="color:var(--muted);font-size:.78rem;">Aucun joueur enregistré</span>';
+}
+function addPlayerByName(name){
+  if(S.players.length>=S.playerCount||S.players.find(p=>p.name===name))return;
+  S.players.push({id:S.players.length,name,roleKey:null,alive:true,protected:false});
+  renderPlayerList();renderSuggestions();
+}
+function renderPlayerList(){
+  const ul=document.getElementById('player-list');ul.innerHTML='';
+  S.players.forEach((p,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<div class="player-num">${i+1}</div><span>${p.name}</span><button class="remove-btn" onclick="removePlayer(${i})">✕</button>`;
+    ul.appendChild(li);
+  });
+  document.getElementById('start-game-btn').disabled=S.players.length<S.playerCount;
+  document.getElementById('setup-title').textContent=`👤 Joueurs (${S.players.length}/${S.playerCount})`;
+}
+function addPlayer(){
+  const inp=document.getElementById('new-player-name');const name=inp.value.trim();
+  if(!name||S.players.length>=S.playerCount||S.players.find(p=>p.name.toLowerCase()===name.toLowerCase())){inp.value='';return;}
+  S.players.push({id:S.players.length,name,roleKey:null,alive:true,protected:false});
+  inp.value='';renderPlayerList();renderSuggestions();inp.focus();
+}
+function removePlayer(i){S.players.splice(i,1);S.players.forEach((p,idx)=>p.id=idx);renderPlayerList();renderSuggestions();}
+
+// ═══════════════════════════════════════════════════════════════
+//  ROLE SELECT SCREEN
+// ═══════════════════════════════════════════════════════════════
+let RC={}; // working role counts
+
+function goToRoleSelect(){
+  RC={};Object.keys(ROLES).forEach(k=>RC[k]=0);
+  applySmartDefault();showScreen('role-select');renderRoleSelectScreen();
+}
+function applySmartDefault(){
+  Object.keys(RC).forEach(k=>RC[k]=0);
+  const n=S.playerCount;
+  RC.freezer=1;
+  if(n<=5)       {RC.goku=n-2;RC.bulma=1;}
+  else if(n<=7)  {RC.goku=n-3;RC.bulma=1;RC.cellMax=1;}
+  else if(n<=9)  {RC.goku=n-4;RC.bulma=1;RC.cellMax=1;RC.krilin=1;}
+  else if(n<=11) {RC.goku=n-5;RC.bulma=1;RC.cellMax=1;RC.krilin=1;RC.trunks=1;}
+  else           {RC.goku=Math.max(1,n-8);RC.freezer=2;RC.bulma=1;RC.cellMax=1;RC.krilin=1;RC.trunks=1;RC.vados=1;}
+  RC.goku=Math.max(1,RC.goku||1);
+}
+function applyPreset(name){
+  Object.keys(RC).forEach(k=>RC[k]=0);
+  const p=PRESETS[name];if(!p)return;
+  Object.entries(p).forEach(([k,v])=>{if(k in RC)RC[k]=v;});
+  renderRoleSelectScreen();
+}
+function renderRoleSelectScreen(){
+  const cats=['Villageois','Spécial Bien','Méchants','Neutre'];
+  const catColor={'Villageois':'var(--orange)','Spécial Bien':'var(--green)','Méchants':'var(--red)','Neutre':'var(--purple)'};
+  const teamLabel={good:'Bien',evil:'Mal',neutral:'Neutre'};
+  const teamCls={good:'team-good',evil:'team-evil',neutral:'team-neutral'};
+  // preset row
+  document.getElementById('preset-row').innerHTML=Object.keys(PRESETS).map(n=>`<button class="preset-btn" onclick="applyPreset('${n}')">${n}</button>`).join('');
+  // body
+  let html='';
+  cats.forEach(cat=>{
+    const roles=Object.entries(ROLES).filter(([,r])=>r.cat===cat);if(!roles.length)return;
+    html+=`<div class="category-label" style="color:${catColor[cat]};">${cat}</div><div class="role-select-grid">`;
+    roles.forEach(([key,r])=>{
+      const cnt=RC[key]||0;
+      html+=`<div class="rsc-card ${cnt>0?'active':''}" id="rsc-${key}" style="border-color:${cnt>0?r.color:'var(--card-border)'}">
+        ${r.mandatory?'<span class="rsc-mandatory">Obligatoire</span>':''}
+        <div class="rsc-header">
+          <span class="rsc-emoji">${r.emoji}</span>
+          <div><div class="rsc-name" style="color:${r.color}">${r.name}</div>
+          <span class="rsc-team-badge ${teamCls[r.team]}">${teamLabel[r.team]}</span></div>
+        </div>
+        <div class="rsc-desc">${r.desc}</div>
+        <div class="rsc-counter">
+          <button class="minus-btn" onclick="changeRC('${key}',-1)">−</button>
+          <span class="rsc-count" id="rsc-cnt-${key}">${cnt}</span>
+          <button class="plus-btn"  onclick="changeRC('${key}',+1)">+</button>
+          ${r.unique?'<span class="rsc-unique">Unique</span>':''}
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  document.getElementById('role-select-body').innerHTML=html;
+  updateRCTotals();
+}
+function changeRC(key,delta){
+  const r=ROLES[key];let v=(RC[key]||0)+delta;
+  v=Math.max(0,v);if(r.unique)v=Math.min(1,v);if(r.maxCount)v=Math.min(r.maxCount,v);
+  RC[key]=v;
+  const cntEl=document.getElementById(`rsc-cnt-${key}`);if(cntEl)cntEl.textContent=v;
+  const card=document.getElementById(`rsc-${key}`);
+  if(card){card.classList.toggle('active',v>0);card.style.borderColor=v>0?r.color:'var(--card-border)';}
+  updateRCTotals();
+}
+function updateRCTotals(){
+  const n=S.playerCount;
+  const total=Object.values(RC).reduce((a,b)=>a+b,0);
+  const good=Object.entries(RC).filter(([k])=>ROLES[k].team==='good').reduce((a,[,v])=>a+v,0);
+  const evil=Object.entries(RC).filter(([k])=>ROLES[k].team==='evil').reduce((a,[,v])=>a+v,0);
+  const neut=Object.entries(RC).filter(([k])=>ROLES[k].team==='neutral').reduce((a,[,v])=>a+v,0);
+  const pill=document.getElementById('total-pill');
+  pill.textContent=`${total} / ${n}`;pill.className='total-pill '+(total===n?'ok':total>n?'over':'');
+  document.getElementById('team-summary').innerHTML=
+    `<span style="color:var(--green)">🛡️ ${good}</span> &nbsp;<span style="color:var(--red)">💀 ${evil}</span> &nbsp;<span style="color:var(--purple)">❓ ${neut}</span>`;
+  document.getElementById('confirm-roles-btn').disabled=!(total===n&&evil>0&&good>0);
+}
+function confirmRoles(){S.chosenRoles={...RC};assignRoles();}
+
+// ═══════════════════════════════════════════════════════════════
+//  ASSIGN ROLES
+// ═══════════════════════════════════════════════════════════════
+function assignRoles(){
+  let pool=[];
+  Object.entries(S.chosenRoles).forEach(([k,n])=>{for(let i=0;i<n;i++)pool.push(k);});
+  for(let i=pool.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]];}
+  S.players.forEach((p,i)=>{p.roleKey=pool[i];p.avatar=AVATARS[i%AVATARS.length];p.healed=false;p.alive=true;p.protected=false;});
+  S.revealIndex=0;S.healUsed=false;S.blockUsed=false;S.corruptUsed=false;
+  S.vetoUsed=false;S.elderUsed=false;S.watchUsed=false;
+  S.coupleIds=[];S.twinIds={};S.whisSide=null;S.blockedId=null;
+  S.log=[];S.round=1;S.phase='day';S.nightQueue=[];S.nightStep=0;
+  showScreen('role-reveal');showCoverCard();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  ROLE REVEAL
+// ═══════════════════════════════════════════════════════════════
+function showCoverCard(){
+  document.getElementById('cover-card').classList.remove('hidden');
+  document.getElementById('role-card-el').classList.add('hidden');
+  const p=S.players[S.revealIndex];
+  document.getElementById('cover-player-name').textContent=p.name;
+  document.getElementById('reveal-progress').textContent=`${S.revealIndex+1} / ${S.players.length}`;
+}
+function revealRole(){
+  document.getElementById('cover-card').classList.add('hidden');
+  const card=document.getElementById('role-card-el');card.classList.remove('hidden','revealed');void card.offsetWidth;card.classList.add('revealed');
+  const p=S.players[S.revealIndex];const r=ROLES[p.roleKey];
+  document.getElementById('rc-player-name').textContent=p.name;
+  document.getElementById('rc-emoji').textContent=r.emoji;
+  document.getElementById('rc-role-name').textContent=r.name;
+  document.getElementById('rc-role-name').style.color=r.color;
+  document.getElementById('rc-role-desc').textContent=r.desc;
+  const tb=document.getElementById('rc-team');
+  if(r.team==='good')     {tb.textContent='🛡️ Côté du Bien';tb.className='rc-team-badge team-good';}
+  else if(r.team==='evil'){tb.textContent='💀 Côté du Mal'; tb.className='rc-team-badge team-evil';}
+  else                    {tb.textContent='❓ Neutre';       tb.className='rc-team-badge team-neutral';}
+  // Extra info
+  const extra=document.getElementById('rc-extra');extra.innerHTML='';
+  if(S.coupleIds.includes(p.id)&&S.coupleIds.length===2){
+    const pid=S.coupleIds.find(id=>id!==p.id);const part=S.players.find(pp=>pp.id===pid);
+    extra.innerHTML+=`<div class="info-badge info-love">💘 Amoureux·se de ${part.name} — si l'un meurt, l'autre suit.</div>`;
+  }
+  if(r.team==='evil'){
+    const allies=S.players.filter(pp=>pp.id!==p.id&&ROLES[pp.roleKey].team==='evil');
+    if(allies.length)extra.innerHTML+=`<div class="info-badge info-ally">👾 Alliés : ${allies.map(a=>`${a.name} (${ROLES[a.roleKey].name})`).join(', ')}</div>`;
+  }
+  const twId=S.twinIds[p.roleKey];
+  if(twId!==undefined){const tw=S.players.find(pp=>pp.id===twId);if(tw)extra.innerHTML+=`<div class="info-badge info-twin">🤖 Jumeau/Jumelle : ${tw.name}</div>`;}
+  if(p.roleKey==='whis')extra.innerHTML+=`<div class="info-badge info-note">🪄 Cette nuit, tu choisiras ton camp secrètement.</div>`;
+}
+function nextReveal(){
+  S.revealIndex++;
+  if(S.revealIndex>=S.players.length)startGame();else showCoverCard();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  GAME START
+// ═══════════════════════════════════════════════════════════════
+function startGame(){
+  addLog('☀️ Le village s\'éveille. Que la lumière guide les guerriers !','lday');
+  showScreen('game-screen');document.getElementById('nav-bar').classList.remove('hidden');
+  renderGame();
+}
+function alive(){return S.players.filter(p=>p.alive);}
+function evil() {return S.players.filter(p=>p.alive&&ROLES[p.roleKey].team==='evil');}
+
+function addLog(msg,cls=''){
+  S.log.unshift({msg,cls});
+  const el=document.getElementById('game-log');
+  if(el)el.innerHTML=S.log.slice(0,30).map(e=>`<div class="log-entry ${e.cls}">${e.msg}</div>`).join('');
+}
+
+function renderGame(){
+  document.getElementById('phase-badge').textContent=S.phase==='day'?`☀️ Jour ${S.round}`:`🌙 Nuit ${S.round}`;
+  document.getElementById('phase-badge').className=`phase-badge ${S.phase==='day'?'phase-day':'phase-night'}`;
+  document.getElementById('round-counter').textContent=`Tour ${S.round}`;
+  // Grid
+  const grid=document.getElementById('players-grid');grid.innerHTML='';
+  S.players.forEach(p=>{
+    const r=ROLES[p.roleKey];
+    const isCouple=S.coupleIds.includes(p.id);
+    const isTwin=Object.values(S.twinIds).includes(p.id);
+    const card=document.createElement('div');
+    card.className='player-card'+(p.alive?'':' dead')+(S.selected===p.id?' selected':'')+(isCouple&&p.alive?' coupled':'');
+    card.innerHTML=
+      `${isCouple&&p.alive?'<div class="badge-tr">💘</div>':''}${isTwin&&p.alive?'<div class="badge-tl">🤖</div>':''}
+       <span class="p-avatar">${p.avatar}</span>
+       <div class="p-name">${p.name}</div>
+       <div class="p-role">${r.emoji} ${r.name}</div>
+       ${!p.alive?'<div class="dead-label">ÉLIMINÉ</div>':''}`;
+    if(p.alive)card.onclick=()=>toggleSel(p.id);
+    grid.appendChild(card);
+  });
+  if(S.phase==='day')renderDay();
+  document.getElementById('game-log').innerHTML=S.log.slice(0,30).map(e=>`<div class="log-entry ${e.cls}">${e.msg}</div>`).join('');
+}
+function toggleSel(id){S.selected=S.selected===id?null:id;renderGame();}
+
+// ═══════════════════════════════════════════════════════════════
+//  DAY PHASE
+// ═══════════════════════════════════════════════════════════════
+function renderDay(){
+  document.getElementById('night-step-panel').classList.add('hidden');
+  document.getElementById('vote-panel').classList.add('hidden');
+  document.getElementById('action-panel').classList.remove('hidden');
+  document.getElementById('action-title').textContent='☀️ Discussion du Village';
+  document.getElementById('action-desc').textContent='Débattez, accusez, défendez-vous ! Sélectionnez un suspect puis votez pour l\'éliminer.';
+  const btns=document.getElementById('action-buttons');btns.innerHTML='';
+  mkBtn(btns,'btn-danger','🗳️ Voter pour éliminer',startVoting);
+  // Chi-Chi veto
+  if(S.players.find(p=>p.alive&&p.roleKey==='chichi')&&!S.vetoUsed)
+    mkBtn(btns,'btn-secondary','👩 Veto de Chi-Chi',()=>{S.vetoUsed=true;addLog('👩 Chi-Chi impose une trêve ! Aucune élimination aujourd\'hui.','lsp');goToNightOrderScreen();});
+  mkBtn(btns,'btn-secondary','🌙 Passer à la nuit',goToNightOrderScreen);
+}
+function mkBtn(c,cls,txt,cb){const b=document.createElement('button');b.className=`btn ${cls}`;b.textContent=txt;b.onclick=cb;c.appendChild(b);}
+
+// ═══════════════════════════════════════════════════════════════
+//  VOTE
+// ═══════════════════════════════════════════════════════════════
+let voteState={};
+function startVoting(){
+  voteState={};alive().forEach(p=>voteState[p.id]=0);
+  document.getElementById('vote-panel').classList.remove('hidden');
+  document.getElementById('vote-desc').textContent='Sélectionnez un joueur, puis "Ajouter un vote".';
+  renderVotePanel();
+}
+function renderVotePanel(){
+  const total=Object.values(voteState).reduce((a,b)=>a+b,0);
+  document.getElementById('vote-tally').innerHTML=alive().map(p=>{
+    const v=voteState[p.id]||0;const pct=total?v/total*100:0;
+    return`<div class="vote-row"><span style="min-width:88px;font-size:.83rem;">${p.name}</span>
+      <div class="vote-bar"><div class="vote-fill" style="width:${pct}%"></div></div>
+      <span style="min-width:22px;font-size:.83rem;">${v}</span></div>`;
+  }).join('');
+  const row=document.getElementById('vote-action-row');row.innerHTML='';
+  const addBtn=document.createElement('button');addBtn.className='btn btn-secondary';
+  addBtn.textContent=S.selected!==null?`+1 pour ${S.players.find(p=>p.id===S.selected)?.name}`:'(Sélectionnez un joueur)';
+  addBtn.disabled=S.selected===null;
+  addBtn.onclick=()=>{if(S.selected!==null&&voteState[S.selected]!==undefined){voteState[S.selected]++;addLog(`🗳️ Vote contre ${S.players.find(p=>p.id===S.selected).name}`,'lv');renderVotePanel();}};
+  row.appendChild(addBtn);
+  mkBtn(row,'btn-danger','⚡ Éliminer le plus voté',resolveVote);
+  mkBtn(row,'btn-secondary','Annuler',()=>document.getElementById('vote-panel').classList.add('hidden'));
+}
+function resolveVote(){
+  const entries=Object.entries(voteState).filter(([id])=>S.players.find(p=>p.id==id)?.alive);
+  if(!entries.length)return;
+  const max=Math.max(...entries.map(([,v])=>v));if(max===0){addLog('Aucun vote exprimé...','lv');return;}
+  const tops=entries.filter(([,v])=>v===max);
+  const [elimId]=tops[Math.floor(Math.random()*tops.length)];
+  document.getElementById('vote-panel').classList.add('hidden');S.selected=null;
+  killPlayer(parseInt(elimId),'vote');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NIGHT ORDER SCREEN  ← LA NOUVELLE FONCTIONNALITÉ
+// ═══════════════════════════════════════════════════════════════
+function goToNightOrderScreen(){
+  // Build the night queue for this round
+  S.nightQueue=NIGHT_ORDER.filter(rk=>{
+    const r=ROLES[rk];
+    if(rk==='vados'     &&(S.round!==1||S.coupleIds.length>0))return false;
+    if((rk==='android18'||rk==='android17')&&(S.round!==1||Object.keys(S.twinIds).length>0))return false;
+    if(rk==='babidi'    &&S.corruptUsed)return false;
+    if(rk==='beerus'    &&S.blockUsed)  return false;
+    if(rk==='whis'      &&(S.round!==1||S.whisSide))return false;
+    if(rk==='dende'     &&S.healUsed)   return false;
+    // Must have at least one alive player with this role
+    return S.players.some(p=>p.alive&&p.roleKey===rk);
+  });
+  S.nightStep=0;S.nightActions={};S.blockedId=null;
+  S.players.forEach(p=>{p.protected=false;p.healed=false;});
+
+  // Render night order screen
+  document.getElementById('nos-title').textContent=`🌙 Nuit ${S.round} — Ordre de Passage`;
+  document.getElementById('nos-subtitle').textContent=S.nightQueue.length>0
+    ?`${S.nightQueue.length} rôle(s) vont agir cette nuit`
+    :'Nuit calme — aucun rôle actif';
+
+  const listEl=document.getElementById('night-order-list-display');listEl.innerHTML='';
+  // Show full order, highlighting present vs absent
+  NIGHT_ORDER.forEach((rk,i)=>{
+    const r=ROLES[rk];if(!r)return;
+    const inQueue=S.nightQueue.includes(rk);
+    const li=document.createElement('li');
+    li.className='nol-item '+(inQueue?'present':'absent');
+    li.id=`nol-${i}`;
+    li.innerHTML=`<span class="nol-num">${S.nightQueue.indexOf(rk)>=0?S.nightQueue.indexOf(rk)+1:'—'}</span>
+      <span class="nol-emoji">${r.emoji}</span>
+      <div class="nol-info">
+        <div class="nol-name" style="color:${inQueue?r.color:'var(--muted)'}">${r.name}</div>
+        <div class="nol-desc">${NIGHT_ROLE_DESC[rk]||''}</div>
+      </div>
+      <span class="nol-status ${inQueue?'in-game':'not-in-game'}">${inQueue?'✅ Présent':'Absent'}</span>`;
+    listEl.appendChild(li);
+  });
+
+  // Staggered animation
+  showScreen('night-order-screen');
+  const items=listEl.querySelectorAll('.nol-item');
+  items.forEach((el,i)=>setTimeout(()=>el.classList.add('visible'),80*i));
+
+  document.getElementById('nos-continue-btn').textContent=S.nightQueue.length>0?'▶️ Commencer la nuit':'☀️ Passer au jour suivant';
+  document.getElementById('nos-continue-btn').onclick=S.nightQueue.length>0?startNightActions:skipToNextDay;
+}
+
+function skipToNextDay(){
+  addLog('🌙 Nuit calme — aucun rôle n\'a agi.','ln');
+  S.round++;S.phase='day';
+  addLog(`☀️ Jour ${S.round} — Les guerriers se réveillent.`,'lday');
+  showScreen('game-screen');document.getElementById('nav-bar').classList.remove('hidden');
+  if(!checkWin())renderGame();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NIGHT ACTIONS
+// ═══════════════════════════════════════════════════════════════
+function startNightActions(){
+  S.phase='night';
+  showScreen('game-screen');document.getElementById('nav-bar').classList.remove('hidden');
+  document.getElementById('action-panel').classList.add('hidden');
+  addLog(`🌙 Nuit ${S.round} — Le village s\'endort...`,'ln');
+  renderGame();
+  renderNightStep();
+}
+
+function renderNightStep(){
+  document.getElementById('night-step-panel').classList.remove('hidden');
+  document.getElementById('action-panel').classList.add('hidden');
+
+  // Queue progress bar
+  const qb=document.getElementById('night-queue-bar');qb.innerHTML='';
+  S.nightQueue.forEach((rk,i)=>{
+    const r=ROLES[rk];
+    const st=i<S.nightStep?'done':i===S.nightStep?'active':'pending';
+    const div=document.createElement('div');div.className=`nq-step ${st}`;
+    div.innerHTML=`<span class="step-emoji">${r.emoji}</span><span class="step-label">${r.name.split(' ')[0]}</span>`;
+    qb.appendChild(div);
+  });
+
+  if(S.nightStep>=S.nightQueue.length){applyNightResults();return;}
+  resolveNightStep();
+}
+
+function resolveNightStep(){
+  const rk=S.nightQueue[S.nightStep];
+  const actor=S.players.find(p=>p.alive&&p.roleKey===rk);
+  const setT=t=>document.getElementById('ns-title').textContent=t;
+  const setD=d=>document.getElementById('ns-desc').textContent=d;
+  const btns=document.getElementById('ns-buttons');btns.innerHTML='';
+
+  if(!actor){advNight();return;}
+
+  // Blocked ?
+  if(S.blockedId===actor.id){
+    setT(`😼 ${ROLES[rk].emoji} ${actor.name} est bloqué !`);
+    setD(`Beerus a neutralisé ${actor.name} cette nuit. Son pouvoir est inactif.`);
+    addLog(`😼 ${ROLES[rk].name} a été bloqué par Beerus !`,'lsp');
+    mkBtn(btns,'btn-secondary','Continuer →',advNight);return;
+  }
+
+  // ── VADOS ──────────────────────────────────────────────────
+  if(rk==='vados'){
+    setT('💘 Vados — Forme un couple');setD(`${actor.name}, choisissez deux joueurs amoureux (cliquez l'un, confirmez, puis l'autre).`);
+    let picks=[];
+    const cb=mkCBtn('Choisir',()=>{
+      if(S.selected===null||picks.includes(S.selected))return;
+      picks.push(S.selected);S.selected=null;renderGame();
+      if(picks.length===1)setD('1er choisi ✅ — Sélectionnez le second.');
+      else{
+        S.coupleIds=picks;const p1=S.players.find(p=>p.id===picks[0]),p2=S.players.find(p=>p.id===picks[1]);
+        addLog(`💘 Vados a uni ${p1.name} & ${p2.name} par les liens de l'amour.`,'ll');
+        setD(`💘 Couple formé : ${p1.name} & ${p2.name}.`);btns.innerHTML='';mkBtn(btns,'btn-primary','OK →',advNight);
+      }
+    });btns.appendChild(cb);
+  }
+  // ── ANDROID 18 / 17 ────────────────────────────────────────
+  else if(rk==='android18'||rk==='android17'){
+    const twinKey=ROLES[rk].twinRole;const twin=S.players.find(p=>p.alive&&p.roleKey===twinKey);
+    setT(`🤖 ${ROLES[rk].name} — Découverte`);
+    if(twin){S.twinIds[rk]=twin.id;S.twinIds[twinKey]=actor.id;setD(`${actor.name}, ton jumeau·elle est : ${twin.name} (${ROLES[twinKey].name}).`);addLog('🤖 Les jumeaux androïdes se reconnaissent...','lsp');}
+    else setD(`${actor.name}, ton jumeau·elle n'est pas en vie.`);
+    mkBtn(btns,'btn-secondary','OK →',advNight);
+  }
+  // ── BULMA ──────────────────────────────────────────────────
+  else if(rk==='bulma'){
+    setT('💙 Bulma — Sonde un guerrier');setD(`${actor.name}, choisissez un joueur à sonder.`);
+    const cb=mkCBtn('Sonder',()=>{
+      if(S.selected===null)return;
+      const t=S.players.find(p=>p.id===S.selected);const r2=ROLES[t.roleKey];
+      const team=r2.seemsGood||r2.team==='good'?'✅ Côté du Bien':'⚠️ CÔTÉ DU MAL !';
+      setD(`🔍 Résultat pour ${actor.name} : ${t.name} → ${team}`);
+      addLog(`🔍 Bulma a sondé un guerrier...`,'ln');S.selected=null;renderGame();
+      btns.innerHTML='';mkBtn(btns,'btn-primary','OK →',advNight);
+    });btns.appendChild(cb);
+  }
+  // ── PICCOLO ────────────────────────────────────────────────
+  else if(rk==='piccolo'){
+    setT('🟢 Piccolo — Identifie un mort');
+    const dead=S.players.filter(p=>!p.alive);
+    if(!dead.length){setD(`${actor.name}, aucun mort à examiner.`);mkBtn(btns,'btn-secondary','OK →',advNight);return;}
+    setD(`${actor.name}, choisissez un joueur éliminé à identifier.`);
+    // allow clicking dead players temporarily
+    S._allowDead=true;renderGame();S._allowDead=false;
+    const cb=mkCBtn('Identifier',()=>{
+      if(S.selected===null)return;const t=S.players.find(p=>p.id===S.selected);
+      if(t.alive){setD('Ce joueur est encore en vie !');return;}
+      const r2=ROLES[t.roleKey];setD(`🔬 ${actor.name} découvre : ${t.name} était ${r2.emoji} ${r2.name} (${r2.team==='good'?'Bien':'Mal'})`);
+      addLog('🟢 Piccolo a examiné un mort...','lsp');S.selected=null;renderGame();
+      btns.innerHTML='';mkBtn(btns,'btn-primary','OK →',advNight);
+    });btns.appendChild(cb);
+    mkBtn(btns,'btn-secondary','Passer',advNight);
+  }
+  // ── GOHAN ──────────────────────────────────────────────────
+  else if(rk==='gohan'){
+    if(S.watchUsed){setT('📚 Gohan — Déjà utilisé');setD(`${actor.name}, vous avez déjà utilisé votre surveillance.`);mkBtn(btns,'btn-secondary','Continuer →',advNight);return;}
+    setT('📚 Gohan — Surveille un joueur');setD(`${actor.name}, choisissez un joueur vivant. Vous saurez s'il a utilisé un pouvoir cette nuit.`);
+    const cb=mkCBtn('Surveiller',()=>{
+      if(S.selected===null)return;
+      // Resolution: deferred to end of night via nightActions.watch
+      S.nightActions.watch=S.selected;S.watchUsed=true;
+      setD(`📚 ${actor.name} surveillera ${S.players.find(p=>p.id===S.selected).name} cette nuit.`);
+      addLog('📚 Gohan surveille un guerrier...','lsp');S.selected=null;advNight();
+    });btns.appendChild(cb);
+    mkBtn(btns,'btn-secondary','Passer',advNight);
+  }
+  // ── KRILIN ─────────────────────────────────────────────────
+  else if(rk==='krilin'){
+    setT('🥋 Krilin — Protège un guerrier');setD(`${actor.name}, choisissez un joueur à protéger (pas vous-même).`);
+    const cb=mkCBtn('Protéger',()=>{
+      if(S.selected===null||S.selected===actor.id)return;
+      S.players.find(p=>p.id===S.selected).protected=true;
+      addLog('🛡️ Krilin veille sur un guerrier...','ln');S.selected=null;advNight();
+    });btns.appendChild(cb);
+  }
+  // ── DENDE ──────────────────────────────────────────────────
+  else if(rk==='dende'){
+    setT('💚 Dende — Soigne un guerrier');setD(`${actor.name}, soignez UN joueur (une seule fois par partie). Ou passez.`);
+    const cb=mkCBtn('Soigner',()=>{
+      if(S.selected===null)return;
+      S.players.find(p=>p.id===S.selected).healed=true;S.healUsed=true;
+      addLog('💚 Dende utilise son soin...','ln');S.selected=null;advNight();
+    });btns.appendChild(cb);
+    mkBtn(btns,'btn-secondary','Passer',advNight);
+  }
+  // ── BEERUS ─────────────────────────────────────────────────
+  else if(rk==='beerus'){
+    setT('😼 Beerus — Bloque un pouvoir');setD(`${actor.name}, bloquez le pouvoir d'un joueur du Bien cette nuit (une seule fois). Ou passez.`);
+    const cb=mkCBtn('Bloquer',()=>{
+      if(S.selected===null)return;
+      const t=S.players.find(p=>p.id===S.selected);
+      if(ROLES[t.roleKey].team==='evil'){setD('Ne peut bloquer qu\'un joueur du Bien !');return;}
+      S.blockedId=t.id;S.blockUsed=true;addLog('😼 Beerus a bloqué un pouvoir...','ln');S.selected=null;advNight();
+    });btns.appendChild(cb);mkBtn(btns,'btn-secondary','Passer',advNight);
+  }
+  // ── BABIDI ─────────────────────────────────────────────────
+  else if(rk==='babidi'){
+    setT('🔮 Babidi — Corrompt un villageois');setD(`${actor.name}, corrompez un villageois (une seule fois par partie). Ou passez.`);
+    const cb=mkCBtn('Corrompre',()=>{
+      if(S.selected===null)return;
+      const t=S.players.find(p=>p.id===S.selected);
+      if(ROLES[t.roleKey].team==='evil'){setD('Ce joueur est déjà du côté du Mal !');return;}
+      t.roleKey='cellMax';S.corruptUsed=true;addLog(`🔮 Babidi a corrompu ${t.name} — il rejoint le Mal !`,'lsp');S.selected=null;advNight();
+    });btns.appendChild(cb);mkBtn(btns,'btn-secondary','Passer',advNight);
+  }
+  // ── WHIS ───────────────────────────────────────────────────
+  else if(rk==='whis'){
+    setT('🪄 Whis — Choisit son camp');setD(`${actor.name}, de quel côté pariez-vous ? Vous gagnerez si ce camp l'emporte et que vous êtes en vie.`);
+    mkBtn(btns,'btn-success','🛡️ Camp du Bien',()=>{S.whisSide='good';addLog('🪄 Whis a choisi son camp en secret...','lsp');advNight();});
+    mkBtn(btns,'btn-danger', '💀 Camp du Mal', ()=>{S.whisSide='evil';addLog('🪄 Whis a choisi son camp en secret...','lsp');advNight();});
+  }
+  // ── FREEZER ────────────────────────────────────────────────
+  else if(rk==='freezer'){
+    const evilNames=evil().map(p=>p.name).join(', ');
+    setT('👾 Freezer — Choisit sa cible');setD(`Équipe du Mal (${evilNames}) — désignez un guerrier à éliminer.`);
+    const cb=mkCBtn('Éliminer',()=>{
+      if(S.selected===null)return;
+      const t=S.players.find(p=>p.id===S.selected);
+      if(ROLES[t.roleKey].team==='evil'){setD('Impossible de cibler un allié !');return;}
+      S.nightActions.kill=S.selected;addLog('💀 Freezer désigne sa cible...','ln');S.selected=null;advNight();
+    });btns.appendChild(cb);
+  }
+  // ── CELL MAX / GOKU BLACK ───────────────────────────────────
+  else if(rk==='cellMax'||rk==='blackGoku'){
+    if(S.nightActions.kill!==undefined){
+      setT(`${ROLES[rk].emoji} ${ROLES[rk].name} — Approuve`);setD('Cible déjà désignée par Freezer.');
+      mkBtn(btns,'btn-secondary','Approuver →',advNight);
+    } else {
+      setT(`${ROLES[rk].emoji} ${ROLES[rk].name} — Choisit`);setD('Freezer est absent — choisissez la cible.');
+      const cb=mkCBtn('Éliminer',()=>{
+        if(S.selected===null)return;
+        const t=S.players.find(p=>p.id===S.selected);
+        if(ROLES[t.roleKey].team==='evil'){setD('Impossible de cibler un allié !');return;}
+        S.nightActions.kill=S.selected;S.selected=null;advNight();
+      });btns.appendChild(cb);
+    }
+  }
+}
+
+function mkCBtn(label,cb){const b=document.createElement('button');b.className='btn btn-primary';b.textContent=`✅ ${label}`;b.onclick=cb;return b;}
+function advNight(){S.nightStep++;renderNightStep();}
+
+// ═══════════════════════════════════════════════════════════════
+//  APPLY NIGHT RESULTS
+// ═══════════════════════════════════════════════════════════════
+function applyNightResults(){
+  // Resolve Gohan watch
+  if(S.nightActions.watch!==undefined){
+    const watched=S.players.find(p=>p.id===S.nightActions.watch);
+    const gohanActor=S.players.find(p=>p.alive&&p.roleKey==='gohan');
+    if(gohanActor&&watched){
+      // Did the watched player use a power? (they were a role that had nightAction and was in queue)
+      const didAct=S.nightQueue.includes(watched.roleKey)&&ROLES[watched.roleKey].nightAction;
+      const note=didAct?'a utilisé un pouvoir cette nuit !':'n\'a rien fait de spécial.';
+      addLog(`📚 Gohan (info secrète) : ${watched.name} ${note}`,'lsp');
+    }
+  }
+
+  const killId=S.nightActions.kill;
+  if(killId!==undefined){
+    S.round++;S.phase='night';
+    killPlayer(parseInt(killId),'night');
+  } else {
+    addLog('🌙 Une nuit calme... tout le monde est sauf !','ls');
+    S.round++;S.phase='day';
+    document.getElementById('night-step-panel').classList.add('hidden');
+    document.getElementById('action-panel').classList.remove('hidden');
+    addLog(`☀️ Jour ${S.round} — Les guerriers se réveillent.`,'lday');
+    if(!checkWin())renderGame();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  KILL & CHAINS
+// ═══════════════════════════════════════════════════════════════
+function killPlayer(targetId,source){
+  const victim=S.players.find(p=>p.id===targetId);
+  if(!victim||!victim.alive){if(!checkWin())renderGame();return;}
+  if(source==='night'){
+    if(victim.protected){addLog(`🛡️ ${victim.name} a été attaqué mais Krilin l'a protégé !`,'ls');if(!checkWin())renderGame();return;}
+    if(victim.healed)   {addLog(`💚 ${victim.name} a été attaqué mais Dende l'a soigné !`,'ls');victim.healed=false;if(!checkWin())renderGame();return;}
+  }
+  victim.alive=false;
+  const r=ROLES[victim.roleKey];
+  const src=source==='vote'?'par le vote du village':source==='night'?'pendant la nuit':'de chagrin';
+  addLog(`💀 ${victim.name} (${r.name}) est éliminé ${src} !`,'ld');
+  // Couple chain
+  if(S.coupleIds.includes(targetId)){
+    const pid=S.coupleIds.find(id=>id!==targetId);const part=S.players.find(p=>p.id===pid);
+    if(part&&part.alive){part.alive=false;addLog(`💔 ${part.name} meurt de chagrin...`,'ll');}
+  }
+  // Trunks hunter
+  if(victim.roleKey==='trunks'){
+    document.getElementById('hunter-modal-desc').textContent=`${victim.name} (Trunks) s'effondre ! Avant de mourir, il peut emporter quelqu'un. Sélectionnez une cible.`;
+    document.getElementById('hunter-modal').classList.remove('hidden');
+    renderGame();return; // defer afterKill
+  }
+  afterKill(source);
+}
+function hunterShoot(){
+  document.getElementById('hunter-modal').classList.add('hidden');
+  if(S.selected!==null){
+    const t=S.players.find(p=>p.id===S.selected&&p.alive);
+    if(t){
+      t.alive=false;addLog(`🏹 Trunks emporte ${t.name} (${ROLES[t.roleKey].name}) dans sa chute !`,'ld');
+      if(S.coupleIds.includes(t.id)){const pid=S.coupleIds.find(id=>id!==t.id);const pt=S.players.find(p=>p.id===pid);if(pt&&pt.alive){pt.alive=false;addLog(`💔 ${pt.name} meurt de chagrin...`,'ll');}}
+    }
+  }
+  S.selected=null;afterKill(S.phase==='night'?'night':'vote');
+}
+function hunterSkip(){document.getElementById('hunter-modal').classList.add('hidden');S.selected=null;afterKill(S.phase==='night'?'night':'vote');}
+function afterKill(source){
+  if(checkWin())return;
+  if(source==='night'){
+    document.getElementById('night-step-panel').classList.add('hidden');
+    document.getElementById('action-panel').classList.remove('hidden');
+    S.phase='day';addLog(`☀️ Jour ${S.round} — Les guerriers se réveillent.`,'lday');
+  }
+  renderGame();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  WIN CHECK
+// ═══════════════════════════════════════════════════════════════
+function checkWin(){
+  const al=alive();
+  const ev=al.filter(p=>ROLES[p.roleKey].team==='evil');
+  const gd=al.filter(p=>ROLES[p.roleKey].team==='good');
+  const ne=al.filter(p=>ROLES[p.roleKey].team==='neutral');
+  // Couple win
+  if(S.coupleIds.length===2){
+    const c0=S.players.find(p=>p.id===S.coupleIds[0]),c1=S.players.find(p=>p.id===S.coupleIds[1]);
+    if(c0?.alive&&c1?.alive&&al.length===2){endGame('couple');return true;}
+  }
+  // Broly
+  if(al.length===1&&al[0].roleKey==='broly'){endGame('broly');return true;}
+  // Evil wins
+  if(ev.length>0&&ev.length>=gd.length+ne.length){endGame('evil');return true;}
+  // Good wins
+  if(ev.length===0){
+    if(ne.length>0&&gd.length===0){endGame('neutral');return true;}
+    // Whis wins with good?
+    const whis=S.players.find(p=>p.alive&&p.roleKey==='whis');
+    if(whis&&S.whisSide==='good')addLog('🪄 Whis gagne avec le camp du Bien !','lsp');
+    endGame('good');return true;
+  }
+  return false;
+}
+function endGame(winner){
+  recordGame(winner);
+  showScreen('win-screen');document.getElementById('nav-bar').classList.remove('hidden');
+  const W={
+    good:   {emoji:'🌟',title:"Les Guerriers Z Triomphent !",  cls:'win-good',desc:'Freezer et ses sbires ont été vaincus. La paix règne !'},
+    evil:   {emoji:'💀',title:"Freezer a Conquis le Village !", cls:'win-evil',desc:'Les forces du Mal ont pris le contrôle. Fuyez !'},
+    couple: {emoji:'💘',title:"L'Amour Triomphe de Tout !",    cls:'',desc:'Le couple de Vados est le dernier survivant. Victoire de l\'Amour !',color:'var(--pink)'},
+    neutral:{emoji:'🍭',title:"Majin Buu Survit à Tout !",     cls:'',desc:'Le plus imprévisible s\'en sort vivant.',color:'var(--pink)'},
+    broly:  {emoji:'💢',title:"Broly — Seul Maître du Village !",cls:'',desc:'Tout le monde est mort. Broly a gagné.',color:'#059669'},
+    whis:   {emoji:'🪄',title:"Whis a Bien Parié !",            cls:'',desc:'L\'Observateur avait choisi le bon camp.',color:'var(--cyan)'},
+  }[winner]||{emoji:'🏆',title:'Fin de Partie',cls:'',desc:''};
+  document.getElementById('win-emoji').textContent=W.emoji;
+  document.getElementById('win-title').textContent=W.title;
+  document.getElementById('win-title').className=`win-title ${W.cls}`;
+  if(W.color)document.getElementById('win-title').style.color=W.color;
+  document.getElementById('win-desc').textContent=W.desc;
+  document.getElementById('winner-list').innerHTML=S.players.map(p=>{
+    const r=ROLES[p.roleKey];const ic=S.coupleIds.includes(p.id);
+    return`<li style="${p.alive?'':'opacity:.5'}">
+      <span style="font-size:1.4rem">${r.emoji}${ic?'💘':''}</span>
+      <div><div style="font-weight:800">${p.name}</div>
+      <div style="font-size:.78rem;color:var(--muted)">${r.name} ${p.alive?'✅ Survivant':'💀 Éliminé'}</div></div>
+    </li>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DB SCREEN
+// ═══════════════════════════════════════════════════════════════
+function switchDbTab(tab){
+  document.querySelectorAll('#db-screen .tab-btn').forEach((b,i)=>b.classList.toggle('active',['players','games'][i]===tab));
+  document.getElementById('db-tab-players').classList.toggle('active',tab==='players');
+  document.getElementById('db-tab-games').classList.toggle('active',tab==='games');
+}
+function renderDbScreen(){const db=loadDb();renderDbStats(db);renderDbPlayers();renderDbGames(db);}
+function renderDbStats(db){
+  const pl=Object.values(db.players);
+  const tw=[ ...pl].sort((a,b)=>b.wins-a.wins)[0];
+  const ts=[...pl].sort((a,b)=>b.survived-a.survived)[0];
+  document.getElementById('db-stats-grid').innerHTML=`
+    <div class="db-stat-card"><div class="stat-val">${db.games.length}</div><div class="stat-lbl">Parties jouées</div></div>
+    <div class="db-stat-card"><div class="stat-val">${pl.length}</div><div class="stat-lbl">Joueurs enregistrés</div></div>
+    <div class="db-stat-card"><div class="stat-val">${tw?tw.name:'—'}</div><div class="stat-lbl">🏆 Meilleur gagnant</div></div>
+    <div class="db-stat-card"><div class="stat-val">${ts?ts.name:'—'}</div><div class="stat-lbl">🛡️ Meilleur survivant</div></div>`;
+}
+function renderDbPlayers(){
+  const db=loadDb();const q=(document.getElementById('db-search')?.value||'').toLowerCase();
+  const pl=Object.values(db.players).filter(p=>p.name.toLowerCase().includes(q)).sort((a,b)=>b.games-a.games);
+  if(!pl.length){document.getElementById('db-players-content').innerHTML=`<div class="db-empty">Aucun joueur. Jouez d'abord une partie !</div>`;return;}
+  const topRole=p=>{const e=Object.entries(p.roles||{});if(!e.length)return'—';e.sort((a,b)=>b[1]-a[1]);const k=e[0][0];return ROLES[k]?`${ROLES[k].emoji} ${ROLES[k].name}`:k;};
+  document.getElementById('db-players-content').innerHTML=`<table class="db-table"><thead><tr>
+    <th>Joueur</th><th>Parties</th><th>Victoires</th><th>Win%</th><th>Survies</th><th>Rôle fav.</th></tr></thead><tbody>
+    ${pl.map(p=>`<tr><td style="font-weight:800">${p.name}</td><td>${p.games}</td>
+      <td style="color:var(--gold)">${p.wins}</td>
+      <td>${p.games?Math.round(p.wins/p.games*100)+'%':'—'}</td>
+      <td>${p.survived}</td><td style="font-size:.78rem">${topRole(p)}</td></tr>`).join('')}
+    </tbody></table>`;
+}
+function renderDbGames(db){
+  if(!db.games.length){document.getElementById('db-games-content').innerHTML=`<div class="db-empty">Aucune partie enregistrée.</div>`;return;}
+  const wl=w=>({good:'🌟 Guerriers Z',evil:'💀 Freezer',neutral:'🍭 Majin Buu',couple:'💘 Couple',broly:'💢 Broly',whis:'🪄 Whis'}[w]||w);
+  document.getElementById('db-games-content').innerHTML=[...db.games].reverse().map((g,i)=>`
+    <div style="background:var(--card-bg);border:1px solid var(--card-border);border-radius:12px;padding:.9rem;margin-bottom:9px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:7px;">
+        <span style="font-family:'Bangers',cursive;font-size:1rem;color:var(--gold);">Partie #${db.games.length-i}</span>
+        <span style="font-size:.78rem;color:var(--muted)">${g.date}</span>
+        <span style="font-size:.82rem;font-weight:800">${wl(g.winner)}</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        ${(g.players||[]).map(p=>{const r=ROLES[p.roleKey];return`<span style="font-size:.72rem;padding:2px 7px;border-radius:16px;background:rgba(255,255,255,.05);color:${p.alive?'var(--green)':'var(--red)'};">${r?r.emoji:'?'} ${p.name} ${p.alive?'✅':'💀'}</span>`;}).join('')}
+      </div>
+    </div>`).join('');
+}
+function clearDb(){if(!confirm('Effacer tout l\'historique ?'))return;localStorage.removeItem(DB_KEY);renderDbScreen();}
+
+// ═══════════════════════════════════════════════════════════════
+//  ROLES CATALOG
+// ═══════════════════════════════════════════════════════════════
+function renderRolesScreen(){
+  const cats=['Villageois','Spécial Bien','Méchants','Neutre'];
+  const cc={'Villageois':'var(--orange)','Spécial Bien':'var(--green)','Méchants':'var(--red)','Neutre':'var(--purple)'};
+  const tl={good:'Bien',evil:'Mal',neutral:'Neutre'};
+  document.getElementById('roles-grid').innerHTML=cats.map(cat=>{
+    const roles=Object.entries(ROLES).filter(([,r])=>r.cat===cat);if(!roles.length)return'';
+    return`<div style="grid-column:1/-1"><div class="category-label" style="color:${cc[cat]}">${cat}</div></div>
+      ${roles.map(([,r])=>`<div class="role-cat-card" style="border-left-color:${r.color}">
+        <span class="rcc-team ${`team-${r.team}`}" style="position:absolute;top:8px;right:8px;font-size:.62rem;font-weight:800;padding:2px 7px;border-radius:8px;">${tl[r.team]}</span>
+        <span class="rcc-emoji">${r.emoji}</span>
+        <div class="rcc-name" style="color:${r.color}">${r.name}</div>
+        <div class="rcc-desc">${r.desc}</div>
+      </div>`).join('')}`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  BOOT
+// ═══════════════════════════════════════════════════════════════
+createStars();mkDragonBalls();showScreen('intro');
+</script>
+</body>
+</html>
