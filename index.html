@@ -510,9 +510,9 @@ const ROLES = {
     desc:'Apparaît comme "Côté du Bien" à la Voyante ! Très difficile à démasquer.',
     nightAction:'killMinion',maxCount:1,color:'#374151',      unique:true, seemsGood:true},
   // ── NEUTRES ────────────────────────────────────────────────
-  majinBuu:  {name:'Majin Buu (Survivant)',emoji:'🍭',team:'neutral',cat:'Neutre',
-    desc:'Tu veux juste survivre. Si tu es encore en vie quand une équipe gagne, tu gagnes aussi !',
-    nightAction:null, maxCount:1, color:'var(--pink)', unique:true},
+  majinBuu:  {name:'Majin Buu (Sorcier)',emoji:'🍭',team:'good',cat:'Spécial Bien',
+    desc:'Chaque nuit, tu peux utiliser une potion de soin (sauver la cible de Freezer, 1×/partie) ET/OU une potion de poison (tuer un joueur, 1×/partie). Tu ne peux pas te soigner toi-même.',
+    nightAction:'witch', maxCount:1, color:'var(--pink)', unique:true},
   broly:     {name:'Broly (Solitaire)',   emoji:'💢',team:'neutral',cat:'Neutre',
     desc:'Objectif : être le seul survivant. Pousse les deux camps à s\'entre-tuer. Si tu es le dernier, tu gagnes seul.',
     nightAction:null, maxCount:1, color:'#059669',     unique:true},
@@ -524,7 +524,7 @@ const ROLES = {
 // Ordre global des actions nocturnes
 const NIGHT_ORDER = [
   'vados','android18','android17',
-  'bulma','piccolo','gohan',
+  'bulma','piccolo','gohan','majinBuu',
   'krilin','dende',
   'beerus','babidi','whis',
   'freezer','cellMax','blackGoku'
@@ -538,6 +538,7 @@ const NIGHT_ROLE_DESC = {
   bulma:    'Sonde le camp d\'un joueur',
   piccolo:  'Identifie le rôle d\'un mort',
   gohan:    'Surveille si un joueur a agi',
+  majinBuu: 'Potion de soin et/ou de poison',
   krilin:   'Protège un joueur',
   dende:    'Soigne un joueur (1× / partie)',
   beerus:   'Bloque un pouvoir (1× / partie)',
@@ -568,6 +569,7 @@ const S = {
   players:[],phase:'day',round:1,selected:null,
   log:[],nightActions:{},nightQueue:[],nightStep:0,
   healUsed:false,blockUsed:false,corruptUsed:false,vetoUsed:false,elderUsed:false,watchUsed:false,
+  witchHealUsed:false,witchPoisonUsed:false,witchPoisonTarget:null,
   coupleIds:[],twinIds:{},whisSide:null,blockedId:null,
   chosenRoles:{},playerCount:6,revealIndex:0,
 };
@@ -589,7 +591,6 @@ function recordGame(winner){
     let won=false;
     if(winner==='good'   &&r.team==='good') won=true;
     if(winner==='evil'   &&r.team==='evil') won=true;
-    if(winner==='neutral'&&p.roleKey==='majinBuu') won=true;
     if(winner==='broly'  &&p.roleKey==='broly')    won=true;
     if(winner==='couple' &&S.coupleIds.includes(p.id)) won=true;
     if(winner==='whis'   &&p.roleKey==='whis') won=true;
@@ -768,6 +769,7 @@ function assignRoles(){
   S.players.forEach((p,i)=>{p.roleKey=pool[i];p.avatar=AVATARS[i%AVATARS.length];p.healed=false;p.alive=true;p.protected=false;});
   S.revealIndex=0;S.healUsed=false;S.blockUsed=false;S.corruptUsed=false;
   S.vetoUsed=false;S.elderUsed=false;S.watchUsed=false;
+  S.witchHealUsed=false;S.witchPoisonUsed=false;S.witchPoisonTarget=null;
   S.coupleIds=[];S.twinIds={};S.whisSide=null;S.blockedId=null;
   S.log=[];S.round=1;S.phase='day';S.nightQueue=[];S.nightStep=0;
   showScreen('role-reveal');showCoverCard();
@@ -926,6 +928,7 @@ function goToNightOrderScreen(){
     if(rk==='beerus'    &&S.blockUsed)  return false;
     if(rk==='whis'      &&(S.round!==1||S.whisSide))return false;
     if(rk==='dende'     &&S.healUsed)   return false;
+    if(rk==='majinBuu'  &&S.witchHealUsed&&S.witchPoisonUsed)return false;
     // Must have at least one alive player with this role
     return S.players.some(p=>p.alive&&p.roleKey===rk);
   });
@@ -1073,8 +1076,7 @@ function resolveNightStep(){
     mkBtn(btns,'btn-secondary','Passer',advNight);
   }
   // ── GOHAN ──────────────────────────────────────────────────
-  else if(rk==='gohan'){
-    if(S.watchUsed){setT('📚 Gohan — Déjà utilisé');setD(`${actor.name}, vous avez déjà utilisé votre surveillance.`);mkBtn(btns,'btn-secondary','Continuer →',advNight);return;}
+  else if(rk==='gohan'){    if(S.watchUsed){setT('📚 Gohan — Déjà utilisé');setD(`${actor.name}, vous avez déjà utilisé votre surveillance.`);mkBtn(btns,'btn-secondary','Continuer →',advNight);return;}
     setT('📚 Gohan — Surveille un joueur');setD(`${actor.name}, choisissez un joueur vivant. Vous saurez s'il a utilisé un pouvoir cette nuit.`);
     const cb=mkCBtn('Surveiller',()=>{
       if(S.selected===null)return;
@@ -1084,6 +1086,58 @@ function resolveNightStep(){
       addLog('📚 Gohan surveille un guerrier...','lsp');S.selected=null;advNight();
     });btns.appendChild(cb);
     mkBtn(btns,'btn-secondary','Passer',advNight);
+  }
+  // ── MAJIN BUU (Sorcier) ────────────────────────────────────
+  else if(rk==='majinBuu'){
+    setT('🍭 Majin Buu — Potions de Sorcier');
+    // Build context message
+    const killId=S.nightActions.kill;
+    const killedName=killId!==undefined?S.players.find(p=>p.id===killId)?.name:null;
+    const healLine=S.witchHealUsed?'🧪 Potion de soin : déjà utilisée.'
+      :(killedName?`🧪 Potion de soin disponible — Freezer cible ${killedName}.`:'🧪 Potion de soin disponible — aucune cible cette nuit.');
+    const poisonLine=S.witchPoisonUsed?'☠️ Potion de poison : déjà utilisée.':'☠️ Potion de poison disponible.';
+    setD(`${actor.name} — ${healLine} ${poisonLine}`);
+
+    // Step machine: witch has up to 2 sub-actions
+    let witchDone=false;
+    function witchFinish(){if(!witchDone){witchDone=true;advNight();}}
+
+    // HEAL button (only if kill target exists and not used)
+    if(!S.witchHealUsed && killId!==undefined && killedName){
+      const hBtn=document.createElement('button');hBtn.className='btn btn-success';
+      hBtn.textContent=`🧪 Sauver ${killedName}`;
+      hBtn.onclick=()=>{
+        S.nightActions.kill=undefined; // cancel the kill
+        S.witchHealUsed=true;
+        addLog(`🍭 Majin Buu utilise sa potion de soin — ${killedName} est sauvé !`,'ls');
+        // Rebuild desc and disable this button
+        hBtn.disabled=true;hBtn.style.opacity='.4';
+        setD(`${actor.name} — 🧪 Soin utilisé ✅  ${S.witchPoisonUsed?'☠️ Poison déjà utilisé.':'☠️ Poison encore disponible.'}`);
+      };
+      btns.appendChild(hBtn);
+    }
+
+    // POISON button (only if not used)
+    if(!S.witchPoisonUsed){
+      const pBtn=document.createElement('button');pBtn.className='btn btn-danger';
+      pBtn.textContent='☠️ Empoisonner un joueur';
+      pBtn.onclick=()=>{
+        if(S.selected===null){setD('Sélectionnez d\'abord une cible dans la grille !');return;}
+        const t=S.players.find(p=>p.id===S.selected);
+        if(!t||!t.alive){setD('Cible invalide !');return;}
+        if(t.id===actor.id){setD('Tu ne peux pas t\'empoisonner toi-même !');return;}
+        S.witchPoisonUsed=true;S.witchPoisonTarget=t.id;
+        S.selected=null;renderGame();
+        addLog(`🍭 Majin Buu utilise sa potion de poison...`,'ln');
+        pBtn.disabled=true;pBtn.style.opacity='.4';
+        setD(`${actor.name} — poison posé sur ${t.name}. Le village se réveillera avec un mort de plus.`);
+      };
+      btns.appendChild(pBtn);
+    }
+
+    // Always show "Terminer"
+    const endBtn=document.createElement('button');endBtn.className='btn btn-secondary';
+    endBtn.textContent='Terminer';endBtn.onclick=witchFinish;btns.appendChild(endBtn);
   }
   // ── KRILIN ─────────────────────────────────────────────────
   else if(rk==='krilin'){
@@ -1177,6 +1231,26 @@ function applyNightResults(){
     }
   }
 
+  // Apply witch poison (kills independently of the main Freezer kill)
+  if(S.witchPoisonTarget!==null){
+    const poisoned=S.players.find(p=>p.id===S.witchPoisonTarget);
+    S.witchPoisonTarget=null;
+    if(poisoned&&poisoned.alive){
+      poisoned.alive=false;
+      addLog(`☠️ ${poisoned.name} (${ROLES[poisoned.roleKey].name}) est mort empoisonné par Majin Buu !`,'ld');
+      if(S.coupleIds.includes(poisoned.id)){
+        const pid=S.coupleIds.find(id=>id!==poisoned.id);const pt=S.players.find(p=>p.id===pid);
+        if(pt&&pt.alive){pt.alive=false;addLog(`💔 ${pt.name} meurt de chagrin...`,'ll');}
+      }
+      if(poisoned.roleKey==='trunks'){
+        document.getElementById('hunter-modal-desc').textContent=`${poisoned.name} (Trunks) est mort empoisonné ! Il peut encore emporter quelqu'un.`;
+        document.getElementById('hunter-modal').classList.remove('hidden');
+        renderGame();return;
+      }
+      if(checkWin())return;
+    }
+  }
+
   const killId=S.nightActions.kill;
   if(killId!==undefined){
     S.round++;S.phase='night';
@@ -1259,7 +1333,6 @@ function checkWin(){
   if(ev.length>0&&ev.length>=gd.length+ne.length){endGame('evil');return true;}
   // Good wins
   if(ev.length===0){
-    if(ne.length>0&&gd.length===0){endGame('neutral');return true;}
     // Whis wins with good?
     const whis=S.players.find(p=>p.alive&&p.roleKey==='whis');
     if(whis&&S.whisSide==='good')addLog('🪄 Whis gagne avec le camp du Bien !','lsp');
@@ -1274,7 +1347,7 @@ function endGame(winner){
     good:   {emoji:'🌟',title:"Les Guerriers Z Triomphent !",  cls:'win-good',desc:'Freezer et ses sbires ont été vaincus. La paix règne !'},
     evil:   {emoji:'💀',title:"Freezer a Conquis le Village !", cls:'win-evil',desc:'Les forces du Mal ont pris le contrôle. Fuyez !'},
     couple: {emoji:'💘',title:"L'Amour Triomphe de Tout !",    cls:'',desc:'Le couple de Vados est le dernier survivant. Victoire de l\'Amour !',color:'var(--pink)'},
-    neutral:{emoji:'🍭',title:"Majin Buu Survit à Tout !",     cls:'',desc:'Le plus imprévisible s\'en sort vivant.',color:'var(--pink)'},
+    neutral:{emoji:'🍭',title:"Majin Buu gagne !",cls:'',desc:'Camp du Bien victorieux — le Sorcier a bien joué ses potions.',color:'var(--pink)'},
     broly:  {emoji:'💢',title:"Broly — Seul Maître du Village !",cls:'',desc:'Tout le monde est mort. Broly a gagné.',color:'#059669'},
     whis:   {emoji:'🪄',title:"Whis a Bien Parié !",            cls:'',desc:'L\'Observateur avait choisi le bon camp.',color:'var(--cyan)'},
   }[winner]||{emoji:'🏆',title:'Fin de Partie',cls:'',desc:''};
